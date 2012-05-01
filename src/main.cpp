@@ -101,14 +101,23 @@ int main()
     }
     
     // Main code
-    slin::Link mylink("Google", "http://www.google.de", "A very famous search engine");
-    mylink.Tags.insert("search engine");
-    mylink.Tags.insert("google");
-    db->AddLink(mylink);
-    cout << "ID: " << mylink.GetID() << endl;
+    slin::Link l1("Stack Overflow", "www.stackoverflow.com", "A free programming Q&A Site"); l1.AddTag("programming"); l1.AddTag("answers"); l1.AddTag("questions");
+    slin::Link l2("Arch Linux", "www.archlinux.org", "A very cool Linux distro, which follows the KISS princip"); l2.AddTag("linux"); l2.AddTag("kiss"); l2.AddTag("awesome");
+    slin::Link l3("Ubuntu", "www.ubuntu.com", "A popular Linux distro, which is made for Linux newbies"); l3.AddTag("linux"); l3.AddTag("ubuntu"); l3.AddTag("easy");
+    slin::Link l4("Twitter", "www.twitter.com", "A very famous short message platform"); l4.AddTag("short message"); l4.AddTag("news"); l4.AddTag("twitter");
+    slin::Link l5("Identi.ca", "www.identi.ca", "Yet another short message platform"); l5.AddTag("short message"); l5.AddTag("news");
 
-    slin::Link nlink = db->GetLink(mylink.GetID());
-    db->AddLink(nlink);
+    db->AddLink(l1);
+    db->AddLink(l2);
+    db->AddLink(l3);
+    db->AddLink(l4);
+    db->AddLink(l5);
+
+    cout << "Search testing: " << endl << "===============" << endl;
+    auto linux = db->Search("linux");
+    cout << "Search: 'linux'" << endl;
+    for(auto &item : linux)
+        cout << item.Title << endl;
 
     delete db;
     return 0;

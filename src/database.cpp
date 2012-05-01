@@ -77,13 +77,41 @@ unordered_set<slin::Link> slin::Database::Search(string query)
 }
 unordered_set<slin::Link> slin::Database::SearchTitle(string query)
 {
+    unordered_set<slin::Link> res;
+    rowset<int> rs = ((this->sql->prepare) << "select rowid from Links where title like :q", use("%" + query + "%"));
+    for(auto &id : rs)
+    {
+        res.insert(this->GetLink(id));
+    }
+    return res;
 }
 unordered_set<slin::Link> slin::Database::SearchLink(string query)
 {
+    unordered_set<slin::Link> res;
+    rowset<int> rs = (this->sql->prepare << "select rowid from Links where url like :q", use("%" + query + "%"));
+    for(auto &id : rs)
+    {
+        res.insert(this->GetLink(id));
+    }
+    return res;
 }
 unordered_set<slin::Link> slin::Database::SearchDescription(string query)
 {
+    unordered_set<slin::Link> res;
+    rowset<int> rs = (this->sql->prepare << "select rowid from Links where description like :q", use("%" + query + "%"));
+    for(auto &id : rs)
+    {
+        res.insert(this->GetLink(id));
+    }
+    return res;
 }
 unordered_set<slin::Link> slin::Database::SearchTag(string query)
 {
+    unordered_set<slin::Link> res;
+    rowset<int> rs = (this->sql->prepare << "select rowid from Links where tags like :q", use("%" + query + "%"));
+    for(auto &id : rs)
+    {
+        res.insert(this->GetLink(id));
+    }
+    return res;
 }
