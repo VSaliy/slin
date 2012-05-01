@@ -1,5 +1,8 @@
 #include "link.hpp"
 
+slin::Link::Link()
+{}
+
 slin::Link::Link(std::string title, std::string link, std::string description)
     : Title{title}, Url{link}, Description{description}, m_id{-1}
 {

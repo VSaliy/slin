@@ -9,6 +9,7 @@ namespace slin
   {
   friend class Database;
   public:
+    Link();
     Link(std::string title, std::string link, std::string description);
     ~Link() = default;
 

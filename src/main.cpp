@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sqlite3.h>
 #include <yaml-cpp/yaml.h>
 #include <boost/filesystem.hpp>
 
@@ -107,9 +106,10 @@ int main()
     mylink.Tags.insert("google");
     db->AddLink(mylink);
     cout << "ID: " << mylink.GetID() << endl;
-    db->RemoveLink(mylink.GetID());
+
+    slin::Link nlink = db->GetLink(mylink.GetID());
+    db->AddLink(nlink);
 
     delete db;
-
     return 0;
 }

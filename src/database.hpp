@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
-#include <sqlite3.h>
 #include <boost/filesystem.hpp>
+#include <soci.h>
+#include <soci-sqlite3.h>
 
 #include "link.hpp"
 #include "utils.hpp"
@@ -31,16 +32,7 @@ namespace slin
         std::unordered_set<Link> SearchTag(std::string query);
 
     private:
-        void check_sq_err(bool throw_ex, int err);
-        int get_last_id();
-
         std::string m_filename;
-        sqlite3 *m_db;
-        // Prepared statements
-        sqlite3_stmt *add_stmt;
-        sqlite3_stmt *delete_stmt;
-        sqlite3_stmt *get_stmt;
-        sqlite3_stmt *last_id_stmt;
-        sqlite3_stmt *search_stmt;
+        soci::session *sql;
     };
 }
