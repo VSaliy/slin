@@ -4,7 +4,11 @@
 #include <vector>
 #include <unordered_set>
 #include <boost/filesystem.hpp>
+
+// Prevent warnings from SOCI
+#pragma GCC system_header
 #include <soci.h>
+#pragma GCC system_header
 #include <soci-sqlite3.h>
 
 #include "link.hpp"
