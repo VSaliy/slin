@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_set>
+#include <boost/xpressive/xpressive.hpp>
 
 namespace slin
 {
@@ -15,7 +16,7 @@ namespace slin
 
     int GetID() const;
     
-    void AddTag(std::string tag);
+    void Tag(std::string tag);
     void AddNote(std::string text);
 
     std::string Title;
