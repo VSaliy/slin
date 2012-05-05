@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <yaml-cpp/yaml.h>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "database.hpp"
 #include "link.hpp"
@@ -11,13 +14,14 @@
 #include <stdlib.h> // getenv()
 #endif
 
-#include <utio/ti.h> // Keep it the last include! Dangerous :)
+#include <utio/ti.h> // Keep it the last include! It's dangerous :)
 
 using namespace std;
 namespace fs = boost::filesystem;
 
 utio::CTerminfo ti;
 YAML::Node config;
+slin::Database *db;
 
 fs::path searchConfig()
 {
@@ -73,7 +77,36 @@ const ustl::string setColor(utio::EColor fg, utio::EColor bg = utio::color_Prese
     }
 }
 
-int main()
+template<class T>
+bool tryDelete(T *p)
+{
+    if(p != nullptr)
+    {
+        delete p;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void add_link(string *title, string *url, string *description, vector<string> tags)
+{
+    slin::Link link(*title, *url, description == nullptr ? "" : *description);
+    for(auto &tag : tags)
+        link.Tag(tag);
+    db->AddLink(link);
+    cout << setColor(utio::lightgreen) << "Added" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+}
+
+void remove_link(int *id)
+{
+    db->RemoveLink(*id);
+    cout << setColor(utio::lightgreen) << "Removed Link" << endl << "ID: " << *id << ti.AllAttrsOff() << endl;
+}
+
+int main(int argc, char **argv)
 {
     // Load config file
     fs::path config_filename = searchConfig();
@@ -85,10 +118,9 @@ int main()
 
     // Initialize colors
     ti.Load();
-    cout << setColor(utio::lightgreen) << "slin v0.1" << ti.AllAttrsOff() << endl;
+    cout << setColor(utio::green) << "slin v0.1" << ti.AllAttrsOff() << endl;
     
     // Open Database
-    slin::Database *db;
     if(config["database"])
     {
         string database_filename = config["database"].as<string>();
@@ -100,24 +132,125 @@ int main()
         return 1;
     }
     
-    // Main code
-    slin::Link l1("Stack Overflow", "www.stackoverflow.com", "A free programming Q&A Site"); l1.AddTag("programming"); l1.AddTag("answers"); l1.AddTag("questions");
-    slin::Link l2("Arch Linux", "www.archlinux.org", "A very cool Linux distro, which follows the KISS princip"); l2.AddTag("linux"); l2.AddTag("kiss"); l2.AddTag("awesome");
-    slin::Link l3("Ubuntu", "www.ubuntu.com", "A popular Linux distro, which is made for Linux newbies"); l3.AddTag("linux"); l3.AddTag("ubuntu"); l3.AddTag("easy");
-    slin::Link l4("Twitter", "www.twitter.com", "A very famous short message platform"); l4.AddTag("short message"); l4.AddTag("news"); l4.AddTag("twitter");
-    slin::Link l5("Identi.ca", "www.identi.ca", "Yet another short message platform"); l5.AddTag("short message"); l5.AddTag("news");
+    ////////////////////
+    // Parse Commandline
+    bool done = false;
+    // Top Level
+    string *program_name = nullptr;
+    string *subcommand   = nullptr;
+    // Add Command
+    string *add_title   = nullptr;
+    string *add_url     = nullptr;
+    string *add_desc    = nullptr;
+    vector<string> add_tags;
+    // URL Command
+    string *url_url     = nullptr;
+    // Remove Command
+    int *rem_id         = nullptr;
 
-    db->AddLink(l1);
-    db->AddLink(l2);
-    db->AddLink(l3);
-    db->AddLink(l4);
-    db->AddLink(l5);
 
-    cout << "Search testing: " << endl << "===============" << endl;
-    auto linux = db->Search("linux");
-    cout << "Search: 'linux'" << endl;
-    for(auto &item : linux)
-        cout << item.Title << endl;
+    for(int i = 0; i < argc; i++)
+    {
+        // Program name
+        // ### | ...
+        if(program_name == nullptr)
+        {
+            program_name = new string(argv[i]);
+            continue;
+        }
+        // Subcommand
+        //     | ###  | ...
+        else if(subcommand == nullptr)
+        {
+            subcommand = new string(argv[i]);
+            continue;
+        }
+        // Add Command
+        //     | add  | ___ | ___ | ...
+        else if(*subcommand == "add")
+        {
+            // | add  | ### | ___ | ...
+            if(add_title == nullptr)
+            {
+                add_title = new string(argv[i]);
+            }
+            // | add  |     | ### | ...
+            else if(add_url == nullptr)
+            {
+                add_url = new string(argv[i]);
+                done = true; // The following arguments are optional
+            }
+            // | add  |     |     | ### | ...
+            else if(add_desc == nullptr)
+            {
+                add_desc = new string(argv[i]);
+            }
+            // Tags
+            // | add  |     |     |     | ...
+            else if(boost::algorithm::starts_with(argv[i], "#"))
+            {
+                add_tags.emplace_back(argv[i]);
+            }
+        }
+        // URL Command
+        //     | url  | ___
+        else if(*subcommand == "url")
+        {
+            // | url  | ###
+            if(url_url == nullptr)
+            {
+                url_url = new string(argv[i]);
+                done = true;
+            }
+        }
+        // Remove Command
+        //     |remove| ___
+        else if(*subcommand == "remove")
+        {
+            // |remove| ###
+            if(rem_id == nullptr)
+            {
+                try
+                {
+                    rem_id = new int(boost::lexical_cast<int>(argv[i]));
+                    done = true;
+                }
+                catch(boost::bad_lexical_cast const&)
+                {
+                    cout << "Invalid number!" << endl;
+                }
+            }
+        }
+        else
+        {
+            cout << "I don't know what '" << *subcommand << "' means" << endl;
+        }
+    }
+    // Check if there were not enough/wrong arguments
+    if(!done)
+    {
+        cout << endl << setColor(utio::red) << "Commandline parsing failed. Probably not enough arguments. " << ti.AllAttrsOff() << endl;
+        if(subcommand)
+            cout << "Subcommand: " << *subcommand << endl;
+        goto cleanup; // Cleanup
+    }
+
+    if(*subcommand == "add")
+        add_link(add_title, add_url, add_desc, add_tags);
+    else if(*subcommand == "url")
+        cout << "Unimplemented" << endl;
+    else if(*subcommand == "remove")
+        remove_link(rem_id);
+
+
+cleanup: // I know this is not nice :)
+    tryDelete(program_name);
+    tryDelete(subcommand);
+    tryDelete(add_title);
+    tryDelete(add_url);
+    tryDelete(add_desc);
+    tryDelete(url_url);
+    tryDelete(rem_id);
 
     delete db;
     return 0;
