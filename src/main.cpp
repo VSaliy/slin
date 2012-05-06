@@ -97,7 +97,20 @@ void add_link(string *title, string *url, string *description, const vector<stri
     for(auto &tag : tags)
         link.Tag(tag);
     db->AddLink(link);
-    cout << setColor(utio::lightgreen) << "Added" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+    cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+}
+
+void url_link(const vector<string> &urls)
+{
+    for(auto &url : urls)
+    {
+        slin::Link link;
+        link.Title = slin::getWebsiteTitle(url);
+        link.Url = url;
+        link.Description = ""; // From where I can get this?
+        db->AddLink(link);
+        cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+    }
 }
 
 void tag_link(int *id, const vector<string> &tags)
@@ -120,10 +133,13 @@ void tag_link(int *id, const vector<string> &tags)
 
 }
 
-void remove_link(int *id)
+void remove_link(const vector<int> &ids)
 {
-    db->RemoveLink(*id);
-    cout << setColor(utio::lightgreen) << "Removed Link" << endl << "ID: " << *id << ti.AllAttrsOff() << endl;
+    for(auto &id : ids)
+    {
+        db->RemoveLink(id);
+        cout << setColor(utio::lightgreen) << "Removed Link" << endl << "ID: " << id << ti.AllAttrsOff() << endl;
+    }
 }
 
 int main(int argc, char **argv)
@@ -164,12 +180,12 @@ int main(int argc, char **argv)
     string *add_desc    = nullptr;
     vector<string> add_tags;
     // URL Command
-    string *url_url     = nullptr;
+    vector<string> url_urls;
     // Tag Command
     int *tag_id         = nullptr;
     vector<string> tag_tags;
     // Remove Command
-    int *rem_id         = nullptr;
+    vector<int> rem_ids;
 
 
     for(int i = 0; i < argc; i++)
@@ -216,15 +232,12 @@ int main(int argc, char **argv)
             }
         }
         // URL Command
-        //     | url  | ___
+        //     | url  | ...
         else if(*subcommand == "url")
         {
-            // | url  | ###
-            if(url_url == nullptr)
-            {
-                url_url = new string(argv[i]);
-                done = true;
-            }
+            // | url  | ...
+            url_urls.emplace_back(argv[i]);
+            done = true;
         }
         // Tag Command
         //     | tag  | ___ | ...
@@ -250,21 +263,18 @@ int main(int argc, char **argv)
             }
         }
         // Remove Command
-        //     |remove| ___
+        //     |remove| ...
         else if(*subcommand == "remove")
         {
-            // |remove| ###
-            if(rem_id == nullptr)
+            // |remove| ...
+            try
             {
-                try
-                {
-                    rem_id = new int(boost::lexical_cast<int>(argv[i]));
-                    done = true;
-                }
-                catch(const boost::bad_lexical_cast&)
-                {
-                    cout << "Invalid number!" << endl;
-                }
+                rem_ids.emplace_back(boost::lexical_cast<int>(argv[i]));
+                done = true;
+            }
+            catch(const boost::bad_lexical_cast&)
+            {
+                cout << "Invalid number!" << endl;
             }
         }
         else
@@ -285,11 +295,11 @@ int main(int argc, char **argv)
     if(*subcommand == "add")
         add_link(add_title, add_url, add_desc, add_tags);
     else if(*subcommand == "url")
-        cout << "Unimplemented" << endl;
+        url_link(url_urls);
     else if(*subcommand == "tag")
         tag_link(tag_id, tag_tags);
     else if(*subcommand == "remove")
-        remove_link(rem_id);
+        remove_link(rem_ids);
 
 
 cleanup: // I know this is not nice :)
@@ -298,9 +308,7 @@ cleanup: // I know this is not nice :)
     tryDelete(add_title);
     tryDelete(add_url);
     tryDelete(add_desc);
-    tryDelete(url_url);
     tryDelete(tag_id);
-    tryDelete(rem_id);
 
     delete db;
     return 0;

@@ -6,6 +6,7 @@ set (CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++11")
 find_library (USTL_LIBRARY NAMES ustl libustl)
 find_library (UTIO_LIBRARY NAMES utio libutio)
 find_library (YAML_CPP_LIBRARY NAMES yaml-cpp libyaml-cpp)
+find_library (LIBCURL_LIBRARY NAMES curl libcurl)
 
 find_path (SOCI_INCLUDE soci.h PATH_SUFFIXES soci)
 find_path (SOCI_SQLITE3_INCLUDE soci-sqlite3.h PATHS "${SOCI_INCLUDE}/sqlite3/")

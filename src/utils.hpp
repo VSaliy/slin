@@ -9,4 +9,6 @@ namespace slin
     std::string concatStrings(const std::unordered_set<std::string> &set, std::string seperator);
     std::string concatStrings(const std::vector<std::string> &vec, std::string seperator);
     std::unordered_set<std::string> splitStrings(std::string str, char seperator);
+    std::string* getWebsite(const std::string &url);
+    std::string getWebsiteTitle(const std::string &url);
 }
