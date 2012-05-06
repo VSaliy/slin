@@ -24,7 +24,8 @@ namespace slin
         void InitDB();
         //std::vector<Link> Query(std::string query);
 
-        void AddLink(Link& link);
+        void AddLink(Link &link);
+        void UpdateLink(const Link &link);
         void RemoveLink(int id); 
         Link GetLink(int id);
         

@@ -16,7 +16,7 @@ namespace slin
 
     int GetID() const;
     
-    void Tag(std::string tag);
+    void Tag(const std::string &tag);
     void AddNote(std::string text);
 
     std::string Title;

@@ -91,13 +91,33 @@ bool tryDelete(T *p)
     }
 }
 
-void add_link(string *title, string *url, string *description, vector<string> tags)
+void add_link(string *title, string *url, string *description, const vector<string> &tags)
 {
     slin::Link link(*title, *url, description == nullptr ? "" : *description);
     for(auto &tag : tags)
         link.Tag(tag);
     db->AddLink(link);
     cout << setColor(utio::lightgreen) << "Added" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+}
+
+void tag_link(int *id, const vector<string> &tags)
+{
+    slin::Link link;
+    try
+    {
+        link = db->GetLink(*id);
+        for(auto &tag : tags)
+        {
+            link.Tag(tag);
+        }
+        db->UpdateLink(link);
+        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << ti.AllAttrsOff() << endl;
+    }
+    catch(const string &e)
+    {
+        cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+    }
+
 }
 
 void remove_link(int *id)
@@ -145,6 +165,9 @@ int main(int argc, char **argv)
     vector<string> add_tags;
     // URL Command
     string *url_url     = nullptr;
+    // Tag Command
+    int *tag_id         = nullptr;
+    vector<string> tag_tags;
     // Remove Command
     int *rem_id         = nullptr;
 
@@ -203,6 +226,29 @@ int main(int argc, char **argv)
                 done = true;
             }
         }
+        // Tag Command
+        //     | tag  | ___ | ...
+        else if(*subcommand == "tag")
+        {
+            // | tag  | ### | ...
+            if(tag_id == nullptr)
+            {
+                try
+                {
+                    tag_id = new int(boost::lexical_cast<int>(argv[i]));
+                }
+                catch(const boost::bad_lexical_cast&)
+                {
+                    cout << "Invalid number!" << endl;
+                }
+            }
+            // | tag  |     | ...
+            else if(boost::algorithm::starts_with(argv[i], "#"))
+            {
+                tag_tags.emplace_back(argv[i]);
+                done = true;
+            }
+        }
         // Remove Command
         //     |remove| ___
         else if(*subcommand == "remove")
@@ -215,7 +261,7 @@ int main(int argc, char **argv)
                     rem_id = new int(boost::lexical_cast<int>(argv[i]));
                     done = true;
                 }
-                catch(boost::bad_lexical_cast const&)
+                catch(const boost::bad_lexical_cast&)
                 {
                     cout << "Invalid number!" << endl;
                 }
@@ -235,10 +281,13 @@ int main(int argc, char **argv)
         goto cleanup; // Cleanup
     }
 
+    // Run the specified subcommand
     if(*subcommand == "add")
         add_link(add_title, add_url, add_desc, add_tags);
     else if(*subcommand == "url")
         cout << "Unimplemented" << endl;
+    else if(*subcommand == "tag")
+        tag_link(tag_id, tag_tags);
     else if(*subcommand == "remove")
         remove_link(rem_id);
 
@@ -250,6 +299,7 @@ cleanup: // I know this is not nice :)
     tryDelete(add_url);
     tryDelete(add_desc);
     tryDelete(url_url);
+    tryDelete(tag_id);
     tryDelete(rem_id);
 
     delete db;

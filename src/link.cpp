@@ -13,7 +13,7 @@ int slin::Link::GetID() const
     return this->m_id;
 }
 
-void slin::Link::Tag(std::string tag)
+void slin::Link::Tag(const std::string &tag)
 {
     using namespace boost::xpressive;
     // Regex: #(+|-)?(.*)
