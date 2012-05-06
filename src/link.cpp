@@ -1,6 +1,7 @@
 #include "link.hpp"
 
 slin::Link::Link()
+    : m_id{-1}
 {}
 
 slin::Link::Link(std::string title, std::string link, std::string description)
