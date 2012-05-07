@@ -1,6 +1,7 @@
 #include "database.hpp"
 
 #include <algorithm>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 using namespace soci;
@@ -77,7 +78,7 @@ slin::Link slin::Database::GetLink(int id)
     *(this->sql) << "select title,url,description,tags,notes from Links where id = :id",
                     into(link.Title), into(link.Url), into(link.Description), into(tags), into(notes), use(id);
     if(not this->sql->got_data())
-        throw string("There is no such ID");
+        throw string("There is no Link with ID=" + boost::lexical_cast<string>(id));
     
     link.Tags  = slin::splitStrings(tags , delim);
     link.Notes = slin::splitStrings(notes, delim);
