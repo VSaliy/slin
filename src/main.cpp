@@ -133,6 +133,35 @@ void tag_link(int *id, const vector<string> &tags)
 
 }
 
+void view_link(const vector<int> &ids)
+{
+    slin::Link link;
+    for(auto &id : ids)
+    {
+        try
+        {
+            link = db->GetLink(id);
+            cout << setColor(utio::blue) << link.Title << "(" << link.Url << "):" << endl;
+            cout << setColor(utio::lightgreen);
+            if(link.Description != "")
+                cout << "  Description: " << link.Description << endl;
+            if(not link.Tags.empty())
+            {
+                cout << "  Tags:";
+                for(auto &tag : link.Tags)
+                    cout << " #" << tag;
+                cout << endl;
+            }
+            cout << ti.AllAttrsOff();
+
+        }
+        catch(const string &e)
+        {
+            cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+        }
+    }
+}
+
 void remove_link(const vector<int> &ids)
 {
     for(auto &id : ids)
@@ -184,6 +213,8 @@ int main(int argc, char **argv)
     // Tag Command
     int *tag_id         = nullptr;
     vector<string> tag_tags;
+    // View Command
+    vector<int> view_ids;
     // Remove Command
     vector<int> rem_ids;
 
@@ -262,6 +293,21 @@ int main(int argc, char **argv)
                 done = true;
             }
         }
+        // View Command
+        //     | view | ...
+        else if(*subcommand == "view")
+        {
+            try
+            {
+                view_ids.emplace_back(boost::lexical_cast<int>(argv[i]));
+                done = true;
+            }
+            catch(const boost::bad_lexical_cast&)
+            {
+                cout << "Invalid number!" << endl;
+            }
+
+        }
         // Remove Command
         //     |remove| ...
         else if(*subcommand == "remove")
@@ -298,6 +344,8 @@ int main(int argc, char **argv)
         url_link(url_urls);
     else if(*subcommand == "tag")
         tag_link(tag_id, tag_tags);
+    else if(*subcommand == "view")
+        view_link(view_ids);
     else if(*subcommand == "remove")
         remove_link(rem_ids);
 
