@@ -149,31 +149,52 @@ void describe_link(int *id, string *desc)
     }
 }
 
+void view_link(int id)
+{
+    try
+    {
+        slin::Link link = db->GetLink(id);
+        cout << setColor(utio::blue) << link.GetID() << ": " << link.Title << "(" << link.Url << "):" << endl;
+        cout << setColor(utio::lightgreen);
+        if(link.Description != "")
+            cout << "  Description: " << link.Description << endl;
+        if(not link.Tags.empty())
+        {
+            cout << "  Tags:";
+            for(auto &tag : link.Tags)
+                cout << " #" << tag;
+            cout << endl;
+        }
+        cout << ti.AllAttrsOff();
+
+    }
+    catch(const string &e)
+    {
+        cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+    }
+}
+
 void view_link(const vector<int> &ids)
 {
-    slin::Link link;
     for(auto &id : ids)
     {
-        try
-        {
-            link = db->GetLink(id);
-            cout << setColor(utio::blue) << link.GetID() << ": " << link.Title << "(" << link.Url << "):" << endl;
-            cout << setColor(utio::lightgreen);
-            if(link.Description != "")
-                cout << "  Description: " << link.Description << endl;
-            if(not link.Tags.empty())
-            {
-                cout << "  Tags:";
-                for(auto &tag : link.Tags)
-                    cout << " #" << tag;
-                cout << endl;
-            }
-            cout << ti.AllAttrsOff();
+        view_link(id);
+    }
+}
 
-        }
-        catch(const string &e)
+void search_link(const vector<string> &args)
+{
+    for(auto &arg : args)
+    {
+        if(boost::algorithm::starts_with(arg, "#"))
         {
-            cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+            for(auto &link : db->SearchTag(arg))
+                view_link(link.GetID());
+        }
+        else
+        {
+            for(auto &link : db->Search(arg))
+                view_link(link.GetID());
         }
     }
 }
@@ -236,6 +257,8 @@ int main(int argc, char **argv)
     // Describe Command
     int *desc_id        = nullptr;
     string *desc_desc   = nullptr;
+    // Search Command
+    vector<string> search_args;
     // View Command
     vector<int> view_ids;
     // Remove Command
@@ -341,6 +364,13 @@ int main(int argc, char **argv)
                 done = true;
             }
         }
+        // Search Command
+        //     |search| ...
+        else if(*subcommand == "search")
+        {
+            search_args.emplace_back(argv[i]);
+            done = true;
+        }
         // View Command
         //     | view | ...
         else if(*subcommand == "view")
@@ -360,7 +390,6 @@ int main(int argc, char **argv)
         //     |remove| ...
         else if(*subcommand == "remove")
         {
-            // |remove| ...
             try
             {
                 rem_ids.emplace_back(boost::lexical_cast<int>(argv[i]));
@@ -404,6 +433,8 @@ int main(int argc, char **argv)
         tag_link(tag_id, tag_tags);
     else if(*subcommand == "describe")
         describe_link(desc_id, desc_desc);
+    else if(*subcommand == "search")
+        search_link(search_args);
     else if(*subcommand == "view")
         view_link(view_ids);
     else if(*subcommand == "remove")

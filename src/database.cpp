@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace soci;
@@ -129,6 +130,10 @@ unordered_set<slin::Link> slin::Database::SearchDescription(string query)
 }
 unordered_set<slin::Link> slin::Database::SearchTag(string query)
 {
+    if(!boost::algorithm::starts_with(query, "#"))
+        return unordered_set<slin::Link>();
+    query.erase(0, 1); // Delete the first character("#")
+
     unordered_set<slin::Link> res;
     rowset<int> rs = (this->sql->prepare << "select rowid from Links where tags like :q", use("%" + query + "%"));
     for(auto &id : rs)
