@@ -279,6 +279,10 @@ int main(int argc, char **argv)
         else if(subcommand == nullptr)
         {
             subcommand = new string(argv[i]);
+
+            if(*subcommand == "version") //HACK: Dirty Bugfix. The "done = true;" below doesn't gets called
+                done = true;
+
             continue;
         }
         // Add Command
@@ -412,8 +416,6 @@ int main(int argc, char **argv)
             cout << "I don't know what '" << *subcommand << "' means" << endl;
         }
     }
-    if(*subcommand == "version") // Bugfix. The above "done = true;" doesn't gets called
-        done = true;
 
     // Check if there were not enough/wrong arguments
     if(!done)
