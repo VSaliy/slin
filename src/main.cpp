@@ -133,6 +133,22 @@ void tag_link(int *id, const vector<string> &tags)
 
 }
 
+void describe_link(int *id, string *desc)
+{
+    slin::Link link;
+    try
+    {
+        link = db->GetLink(*id);
+        link.Description = *desc;
+        db->UpdateLink(link);
+        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << ti.AllAttrsOff() << endl;
+    }
+    catch(const string &e)
+    {
+        cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+    }
+}
+
 void view_link(const vector<int> &ids)
 {
     slin::Link link;
@@ -141,7 +157,7 @@ void view_link(const vector<int> &ids)
         try
         {
             link = db->GetLink(id);
-            cout << setColor(utio::blue) << link.Title << "(" << link.Url << "):" << endl;
+            cout << setColor(utio::blue) << link.GetID() << ": " << link.Title << "(" << link.Url << "):" << endl;
             cout << setColor(utio::lightgreen);
             if(link.Description != "")
                 cout << "  Description: " << link.Description << endl;
@@ -171,6 +187,11 @@ void remove_link(const vector<int> &ids)
     }
 }
 
+void show_version()
+{
+    cout << setColor(utio::green) << "Slin v0.1" << ti.AllAttrsOff() << endl;
+}
+
 int main(int argc, char **argv)
 {
     // Load config file
@@ -183,8 +204,7 @@ int main(int argc, char **argv)
 
     // Initialize colors
     ti.Load();
-    cout << setColor(utio::green) << "slin v0.1" << ti.AllAttrsOff() << endl;
-    
+
     // Open Database
     if(config["database"])
     {
@@ -213,6 +233,9 @@ int main(int argc, char **argv)
     // Tag Command
     int *tag_id         = nullptr;
     vector<string> tag_tags;
+    // Describe Command
+    int *desc_id        = nullptr;
+    string *desc_desc   = nullptr;
     // View Command
     vector<int> view_ids;
     // Remove Command
@@ -293,6 +316,31 @@ int main(int argc, char **argv)
                 done = true;
             }
         }
+        // Describe Command
+        //     |describe| ___ | ___
+        else if(*subcommand == "describe")
+        {
+            if(desc_id == nullptr)
+            {
+                try
+                {
+                    desc_id = new int(boost::lexical_cast<int>(argv[i]));
+                }
+                catch(const boost::bad_lexical_cast&)
+                {
+                    cout << "Invalid number!" << endl;
+                }
+            }
+            else
+            {
+                if(desc_desc == nullptr)
+                    desc_desc = new string();
+                else
+                    *desc_desc += " "; // Append a space if it's not the first element
+                *desc_desc += argv[i];
+                done = true;
+            }
+        }
         // View Command
         //     | view | ...
         else if(*subcommand == "view")
@@ -323,11 +371,21 @@ int main(int argc, char **argv)
                 cout << "Invalid number!" << endl;
             }
         }
+        // Version Command
+        //     |version
+        else if(*subcommand == "version")
+        {
+            // Nothing important
+            done = true;
+        }
         else
         {
             cout << "I don't know what '" << *subcommand << "' means" << endl;
         }
     }
+    if(*subcommand == "version") // Bugfix. The above "done = true;" doesn't gets called
+        done = true;
+
     // Check if there were not enough/wrong arguments
     if(!done)
     {
@@ -344,10 +402,14 @@ int main(int argc, char **argv)
         url_link(url_urls);
     else if(*subcommand == "tag")
         tag_link(tag_id, tag_tags);
+    else if(*subcommand == "describe")
+        describe_link(desc_id, desc_desc);
     else if(*subcommand == "view")
         view_link(view_ids);
     else if(*subcommand == "remove")
         remove_link(rem_ids);
+    else if(*subcommand == "version")
+        show_version();
 
 
 cleanup: // I know this is not nice :)
@@ -357,6 +419,8 @@ cleanup: // I know this is not nice :)
     tryDelete(add_url);
     tryDelete(add_desc);
     tryDelete(tag_id);
+    tryDelete(desc_id);
+    tryDelete(desc_desc);
 
     delete db;
     return 0;
