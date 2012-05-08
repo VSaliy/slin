@@ -1,6 +1,13 @@
 cmake_minimum_required (VERSION 2.8)
 project (slin)
 
+include (CPack)
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A small link manager for the cli")
+set (CPACK_PACKAGE_VERSION_MAJOR "0")
+set (CPACK_PACKAGE_VERSION_MINOR "1")
+set (CPACK_PACKAGE_VERSION_PATCH "0")
+set (CPACK_PACKAGE_EXECUTABLES "slin")
+
 set (CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++11")
 
 find_library (USTL_LIBRARY NAMES ustl libustl)
