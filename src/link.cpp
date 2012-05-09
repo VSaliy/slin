@@ -1,5 +1,7 @@
 #include "link.hpp"
 
+#include <iostream>
+
 slin::Link::Link()
     : m_id{-1}
 {}
