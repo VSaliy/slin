@@ -213,6 +213,39 @@ void show_version()
     cout << setColor(utio::green) << "Slin v0.1" << ti.AllAttrsOff() << endl;
 }
 
+void show_help()
+{
+    cout << setColor(utio::green) << "Help: " << endl;
+    cout << setColor(utio::yellow)    << "add      "<< setColor(utio::blue) << "<title> <url> [<description> [#<tag>...]]" << endl;
+    cout << setColor(utio::lightgray) << "         Adds a link to the database." << endl;
+
+    cout << setColor(utio::yellow)    << "url      "<< setColor(utio::blue) << "<url>..." << endl;
+    cout << setColor(utio::lightgray) << "         Adds a link to the database based on an url." << endl;
+
+    cout << setColor(utio::yellow)    << "tag      "<< setColor(utio::blue) << "<id> [#[+|-]<tag>...]" << endl;
+    cout << setColor(utio::lightgray) << "         Adds or Removes an tag from a link." << endl;
+
+    cout << setColor(utio::yellow)    << "describe "<< setColor(utio::blue) << "<id> <description>" << endl;
+    cout << setColor(utio::lightgray) << "         Set a description of a link." << endl;
+
+    cout << setColor(utio::yellow)    << "search   "<< setColor(utio::blue) << "<query|#[+|-]tag>..." << endl;
+    cout << setColor(utio::lightgray) << "         Search links." << endl;
+
+    cout << setColor(utio::yellow)    << "view     "<< setColor(utio::blue) << "<id>..." << endl;
+    cout << setColor(utio::lightgray) << "         Display information about a link." << endl;
+
+    cout << setColor(utio::yellow)    << "remove   "<< setColor(utio::blue) << "<id>..." << endl;
+    cout << setColor(utio::lightgray) << "         Removes a link from the database." << endl;
+
+    cout << setColor(utio::yellow)    << "version  "<< setColor(utio::blue) << endl;
+    cout << setColor(utio::lightgray) << "         Shows the version of slin." << endl;
+
+    cout << setColor(utio::yellow)    << "help     "<< setColor(utio::blue) << endl;
+    cout << setColor(utio::lightgray) << "         Shows the help(this)." << endl;
+
+    cout << ti.AllAttrsOff();
+}
+
 int main(int argc, char **argv)
 {
     // Load config file
@@ -281,6 +314,8 @@ int main(int argc, char **argv)
             subcommand = new string(argv[i]);
 
             if(*subcommand == "version") //HACK: Dirty Bugfix. The "done = true;" below doesn't gets called
+                done = true;
+            if(*subcommand == "help")
                 done = true;
 
             continue;
@@ -376,7 +411,7 @@ int main(int argc, char **argv)
             done = true;
         }
         // View Command
-        //     | view | ...
+        //     | view | ___
         else if(*subcommand == "view")
         {
             try
@@ -411,6 +446,10 @@ int main(int argc, char **argv)
             // Nothing important
             done = true;
         }
+        else if(*subcommand == "help")
+        {
+            done = true;
+        }
         else
         {
             cout << "I don't know what '" << *subcommand << "' means" << endl;
@@ -423,6 +462,9 @@ int main(int argc, char **argv)
         cout << endl << setColor(utio::red) << "Commandline parsing failed. Probably not enough arguments. " << ti.AllAttrsOff() << endl;
         if(subcommand)
             cout << "Subcommand: " << *subcommand << endl;
+
+        show_help();
+
         goto cleanup; // Cleanup
     }
 
@@ -443,6 +485,8 @@ int main(int argc, char **argv)
         remove_link(rem_ids);
     else if(*subcommand == "version")
         show_version();
+    else if(*subcommand == "help")
+        show_help();
 
 
 cleanup: // I know this is not nice :)
