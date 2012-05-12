@@ -81,17 +81,16 @@ string* slin::getWebsite(const string &url)
     return page;
 }
 
-string slin::getWebsiteTitle(const string &url)
+string slin::getWebsiteTitle(string *html)
 {
     using namespace boost::xpressive;
 
     string title;
-    auto page = getWebsite(url);
 
     // Extract the title from the webpage
     static sregex titlef = as_xpr("<title>") >> (s1=-+_) >> "</title>";
     smatch what;
-    if(regex_search(*page, what, titlef))
+    if(regex_search(*html, what, titlef))
     {
         title = what[1].str();
     }
@@ -99,6 +98,40 @@ string slin::getWebsiteTitle(const string &url)
     {
         title = "";
     }
+    return title;
+}
+
+string slin::getWebsiteTitle(const string &url)
+{
+    auto page = getWebsite(url);
+    string title = slin::getWebsiteTitle(page);
     delete page;
     return title;
+}
+
+string slin::getWebsiteDescription(string *html)
+{
+    using namespace boost::xpressive;
+
+    string description;
+
+    static sregex descriptionf = icase("<meta name=\"description\" content=\"") >> (s1=-+_) >> "\"" >> -*(~_w) >> -!as_xpr("/") >> ">";
+    smatch what;
+    if(regex_search(*html, what, descriptionf))
+    {
+        description = what[1].str();
+    }
+    else
+    {
+        description = "";
+    }
+    return description;
+}
+
+string slin::getWebsiteDescription(const string &url)
+{
+    auto page = slin::getWebsite(url);
+    string description = slin::getWebsiteDescription(page);
+    delete page;
+    return description;
 }

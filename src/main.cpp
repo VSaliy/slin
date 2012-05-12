@@ -105,11 +105,15 @@ void url_link(const vector<string> &urls)
     for(auto &url : urls)
     {
         slin::Link link;
-        link.Title = slin::getWebsiteTitle(url);
+        auto html = slin::getWebsite(url);
+
+        link.Title = slin::getWebsiteTitle(html);
         link.Url = url;
-        link.Description = ""; // From where I can get this?
+        link.Description = slin::getWebsiteDescription(html); // From where I can get this?
         db->AddLink(link);
         cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+
+        delete html;
     }
 }
 
