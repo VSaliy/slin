@@ -12,6 +12,13 @@ set (CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++11")
 
 find_library (USTL_LIBRARY NAMES ustl libustl)
 find_library (UTIO_LIBRARY NAMES utio libutio)
+
+if(USTL_LIBRARY AND UTIO_LIBRARY)
+	option(WITH_COLOR "Enables color output" ON)
+else(USTL_LIBRARY AND UTIO_LIBRARY)
+	option(WITH_COLOR "Enables color output" OFF)
+endif(USTL_LIBRARY AND UTIO_LIBRARY)
+
 find_library (YAML_CPP_LIBRARY NAMES yaml-cpp libyaml-cpp)
 find_library (LIBCURL_LIBRARY NAMES curl libcurl)
 

@@ -9,19 +9,53 @@
 
 #include "database.hpp"
 #include "link.hpp"
+#include "config.hpp"
 
 #ifdef _linux_
 #include <stdlib.h> // getenv()
 #endif
 
-#include <utio/ti.h> // Keep it the last include! It's dangerous :)
+slin::Database *db;
+YAML::Node config;
+
+#ifdef WITH_COLOR
+#include <utio.h> // Keep it the last include! It's dangerous :)
+
+utio::CTerminfo ti;
+
+const ustl::string setColor_(utio::EColor fg)
+{
+    if(config["color"].as<bool>() == true)
+    {
+        return ti.Color(fg);
+    }
+    else
+    {
+        return "";
+    }
+}
+
+utio::CTerminfo::capout_t resetAttr_()
+{
+    if(config["color"].as<bool>() == true)
+    {
+        return ti.AllAttrsOff();
+    }
+    else
+    {
+        return "";
+    }
+}
+
+#define setColor(FG) setColor_(FG)
+#define resetAttr() resetAttr_()
+#else
+#define setColor(FG) ""
+#define resetAttr() ""
+#endif
 
 using namespace std;
 namespace fs = boost::filesystem;
-
-utio::CTerminfo ti;
-YAML::Node config;
-slin::Database *db;
 
 fs::path searchConfig()
 {
@@ -65,17 +99,6 @@ void writeDefaultConfig(string filename)
     fout.close();
 }
 
-const ustl::string setColor(utio::EColor fg, utio::EColor bg = utio::color_Preserve)
-{
-    if(config["color"].as<bool>() == true)
-    {
-        return ti.Color(fg, bg);
-    }
-    else
-    {
-        return ustl::string();
-    }
-}
 
 template<class T>
 bool tryDelete(T *p)
@@ -97,7 +120,7 @@ void add_link(string *title, string *url, string *description, const vector<stri
     for(auto &tag : tags)
         link.Tag(tag);
     db->AddLink(link);
-    cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+    cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
 }
 
 void url_link(const vector<string> &urls)
@@ -111,7 +134,7 @@ void url_link(const vector<string> &urls)
         link.Url = url;
         link.Description = slin::getWebsiteDescription(html); // From where I can get this?
         db->AddLink(link);
-        cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << ti.AllAttrsOff() << endl;
+        cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
 
         delete html;
     }
@@ -128,11 +151,11 @@ void tag_link(int *id, const vector<string> &tags)
             link.Tag(tag);
         }
         db->UpdateLink(link);
-        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << ti.AllAttrsOff() << endl;
+        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
     }
     catch(const string &e)
     {
-        cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+        cout << setColor(utio::red) << e << resetAttr() << endl;
     }
 
 }
@@ -145,11 +168,11 @@ void describe_link(int *id, string *desc)
         link = db->GetLink(*id);
         link.Description = *desc;
         db->UpdateLink(link);
-        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << ti.AllAttrsOff() << endl;
+        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
     }
     catch(const string &e)
     {
-        cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+        cout << setColor(utio::red) << e << resetAttr() << endl;
     }
 }
 
@@ -169,12 +192,12 @@ void view_link(int id)
                 cout << " #" << tag;
             cout << endl;
         }
-        cout << ti.AllAttrsOff();
+        cout << resetAttr();
 
     }
     catch(const string &e)
     {
-        cout << setColor(utio::red) << e << ti.AllAttrsOff() << endl;
+        cout << setColor(utio::red) << e << resetAttr() << endl;
     }
 }
 
@@ -208,13 +231,13 @@ void remove_link(const vector<int> &ids)
     for(auto &id : ids)
     {
         db->RemoveLink(id);
-        cout << setColor(utio::lightgreen) << "Removed Link" << endl << "ID: " << id << ti.AllAttrsOff() << endl;
+        cout << setColor(utio::lightgreen) << "Removed Link" << endl << "ID: " << id << resetAttr() << endl;
     }
 }
 
 void show_version()
 {
-    cout << setColor(utio::green) << "Slin v0.1" << ti.AllAttrsOff() << endl;
+    cout << setColor(utio::green) << "Slin v0.1" << resetAttr() << endl;
 }
 
 void show_help()
@@ -247,7 +270,7 @@ void show_help()
     cout << setColor(utio::yellow)    << "help     "<< setColor(utio::blue) << endl;
     cout << setColor(utio::lightgray) << "         Shows the help(this)." << endl;
 
-    cout << ti.AllAttrsOff();
+    cout << resetAttr();
 }
 
 int main(int argc, char **argv)
@@ -260,8 +283,10 @@ int main(int argc, char **argv)
     }
     config = YAML::LoadFile(config_filename.native());
 
+    #ifdef WITH_COLOR
     // Initialize colors
     ti.Load();
+    #endif
 
     // Open Database
     if(config["database"])
@@ -463,7 +488,7 @@ int main(int argc, char **argv)
     // Check if there were not enough/wrong arguments
     if(!done)
     {
-        cout << endl << setColor(utio::red) << "Commandline parsing failed. Probably not enough arguments. " << ti.AllAttrsOff() << endl;
+        cout << endl << setColor(utio::red) << "Commandline parsing failed. Probably not enough arguments. " << resetAttr() << endl;
         if(subcommand)
             cout << "Subcommand: " << *subcommand << endl;
 
