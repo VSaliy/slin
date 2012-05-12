@@ -16,6 +16,7 @@ slin::Database::Database(string filename)
 
 slin::Database::~Database()
 {
+    delete this->sql;
 }
 
 void slin::Database::InitDB()
