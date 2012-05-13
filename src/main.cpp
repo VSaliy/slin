@@ -7,52 +7,18 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "database.hpp"
-#include "link.hpp"
-#include "config.hpp"
-
 #ifdef _linux_
 #include <stdlib.h> // getenv()
 #endif
 
+#include "database.hpp"
+#include "link.hpp"
+#include "config.hpp"
+
 slin::Database *db;
 YAML::Node config;
 
-#ifdef WITH_COLOR
-#include <utio.h> // Keep it the last include! It's dangerous :)
-
-utio::CTerminfo ti;
-
-const ustl::string setColor_(utio::EColor fg)
-{
-    if(config["color"].as<bool>() == true)
-    {
-        return ti.Color(fg);
-    }
-    else
-    {
-        return "";
-    }
-}
-
-utio::CTerminfo::capout_t resetAttr_()
-{
-    if(config["color"].as<bool>() == true)
-    {
-        return ti.AllAttrsOff();
-    }
-    else
-    {
-        return "";
-    }
-}
-
-#define setColor(FG) setColor_(FG)
-#define resetAttr() resetAttr_()
-#else
-#define setColor(FG) ""
-#define resetAttr() ""
-#endif
+#include "coloroutput.hpp"
 
 using namespace std;
 namespace fs = boost::filesystem;
@@ -283,10 +249,7 @@ int main(int argc, char **argv)
     }
     config = YAML::LoadFile(config_filename.native());
 
-    #ifdef WITH_COLOR
-    // Initialize colors
-    ti.Load();
-    #endif
+    terminalLoad();
 
     // Open Database
     if(config["database"])
