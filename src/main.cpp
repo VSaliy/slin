@@ -142,21 +142,25 @@ void describe_link(int *id, string *desc)
     }
 }
 
-void view_link(int id)
+void view_link(int id, bool quit=false)
 {
     try
     {
         slin::Link link = db->GetLink(id);
-        cout << setColor(utio::blue) << link.GetID() << ": " << link.Title << "(" << link.Url << "):" << endl;
-        cout << setColor(utio::lightgreen);
-        if(link.Description != "")
-            cout << "  Description: " << link.Description << endl;
-        if(not link.Tags.empty())
+        cout << setColor(utio::green) << setw(4) << link.GetID() << ": "<< setColor(utio::lightblue) << link.Title << setColor(utio::blue) <<" (" << link.Url << "):" << endl;
+
+        if(!quit)
         {
-            cout << "  Tags:";
-            for(auto &tag : link.Tags)
-                cout << " #" << tag;
-            cout << endl;
+            cout << setColor(utio::lightgreen);
+            if(link.Description != "")
+                cout << "  Description: " << link.Description << endl;
+            if(not link.Tags.empty())
+            {
+                cout << "  Tags:";
+                for(auto &tag : link.Tags)
+                    cout << " #" << tag;
+                cout << endl;
+            }
         }
         cout << resetAttr();
 
@@ -175,19 +179,19 @@ void view_link(const vector<int> &ids)
     }
 }
 
-void search_link(const vector<string> &args)
+void search_link(const vector<string> &args, bool quit=false)
 {
     for(auto &arg : args)
     {
         if(boost::algorithm::starts_with(arg, "#"))
         {
             for(auto &link : db->SearchTag(arg))
-                view_link(link.GetID());
+                view_link(link.GetID(), quit);
         }
         else
         {
             for(auto &link : db->Search(arg))
-                view_link(link.GetID());
+                view_link(link.GetID(), quit);
         }
     }
 }
@@ -284,6 +288,8 @@ int main(int argc, char **argv)
     string *desc_desc   = nullptr;
     // Search Command
     vector<string> search_args;
+    // Searchq Command
+    vector<string> searchq_args;
     // View Command
     vector<int> view_ids;
     // Remove Command
@@ -402,6 +408,13 @@ int main(int argc, char **argv)
             search_args.emplace_back(argv[i]);
             done = true;
         }
+        // Searchq Command
+        //     |searchq| ...
+        else if(*subcommand == "searchq")
+        {
+            searchq_args.emplace_back(argv[i]);
+            done = true;
+        }
         // View Command
         //     | view | ___
         else if(*subcommand == "view")
@@ -471,6 +484,8 @@ int main(int argc, char **argv)
         describe_link(desc_id, desc_desc);
     else if(*subcommand == "search")
         search_link(search_args);
+    else if(*subcommand == "searchq")
+        search_link(searchq_args, true);
     else if(*subcommand == "view")
         view_link(view_ids);
     else if(*subcommand == "remove")
