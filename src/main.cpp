@@ -147,7 +147,8 @@ void view_link(int id, bool quit=false)
     try
     {
         slin::Link link = db->GetLink(id);
-        cout << setColor(utio::green) << setw(4) << link.GetID() << ": "<< setColor(utio::lightblue) << link.Title << setColor(utio::blue) <<" (" << link.Url << "):" << endl;
+        cout << setColor(utio::green) << setw(4) << link.GetID() << ": "<< setColor(utio::lightblue) << link.Title << setColor(utio::blue) <<" (" << link.Url << ")"
+            << ((quit||(link.Description.empty() && link.Tags.empty())) ? "":":") << endl;
 
         if(!quit)
         {
