@@ -153,10 +153,10 @@ void view_link(int id, bool quit=false)
         {
             cout << setColor(utio::lightgreen);
             if(link.Description != "")
-                cout << "  Description: " << link.Description << endl;
+                cout << "      Description: " << link.Description << endl;
             if(not link.Tags.empty())
             {
-                cout << "  Tags:";
+                cout << "      Tags:";
                 for(auto &tag : link.Tags)
                     cout << " #" << tag;
                 cout << endl;
@@ -210,35 +210,26 @@ void show_version()
     cout << setColor(utio::green) << "Slin v0.1" << resetAttr() << endl;
 }
 
+inline static void _print_help(string command, string arguments, string description)
+{
+    #define HELP_ALIGN 10
+    cout << setColor(utio::yellow) << setw(HELP_ALIGN) << command + " " << setColor(utio::blue) << arguments << endl;
+    cout << setColor(utio::lightgray) << string(HELP_ALIGN, ' ') << description << endl;
+}
+
 void show_help()
 {
     cout << setColor(utio::green) << "Help: " << endl;
-    cout << setColor(utio::yellow)    << "add      "<< setColor(utio::blue) << "<title> <url> [<description> [#<tag>...]]" << endl;
-    cout << setColor(utio::lightgray) << "         Adds a link to the database." << endl;
 
-    cout << setColor(utio::yellow)    << "url      "<< setColor(utio::blue) << "<url>..." << endl;
-    cout << setColor(utio::lightgray) << "         Adds a link to the database based on an url." << endl;
-
-    cout << setColor(utio::yellow)    << "tag      "<< setColor(utio::blue) << "<id> [#[+|-]<tag>...]" << endl;
-    cout << setColor(utio::lightgray) << "         Adds or Removes an tag from a link." << endl;
-
-    cout << setColor(utio::yellow)    << "describe "<< setColor(utio::blue) << "<id> <description>" << endl;
-    cout << setColor(utio::lightgray) << "         Set a description of a link." << endl;
-
-    cout << setColor(utio::yellow)    << "search   "<< setColor(utio::blue) << "<query|#[+|-]tag>..." << endl;
-    cout << setColor(utio::lightgray) << "         Search links." << endl;
-
-    cout << setColor(utio::yellow)    << "view     "<< setColor(utio::blue) << "<id>..." << endl;
-    cout << setColor(utio::lightgray) << "         Display information about a link." << endl;
-
-    cout << setColor(utio::yellow)    << "remove   "<< setColor(utio::blue) << "<id>..." << endl;
-    cout << setColor(utio::lightgray) << "         Removes a link from the database." << endl;
-
-    cout << setColor(utio::yellow)    << "version  "<< setColor(utio::blue) << endl;
-    cout << setColor(utio::lightgray) << "         Shows the version of slin." << endl;
-
-    cout << setColor(utio::yellow)    << "help     "<< setColor(utio::blue) << endl;
-    cout << setColor(utio::lightgray) << "         Shows the help(this)." << endl;
+    _print_help("add",      "<title> <url> [<description> [#<tag>...]]", "Adds a link to the database.");
+    _print_help("url",      "<url>...", "Adds a link to the database based on an url.");
+    _print_help("tag",      "<id> [#[+|-]<tag>...]", "Adds or Removes an tag from a link.");
+    _print_help("describe", "<id> <description>", "Set a description of a link.");
+    _print_help("search",   "<query|#[+|-]tag>...", "Search links.");
+    _print_help("view",     "<id>...", "Display information about a link.");
+    _print_help("remove",   "<id>...", "Removes a link from the database.");
+    _print_help("version",  "", "Shows the version of slin.");
+    _print_help("help",     "", "Shows this help.");
 
     cout << resetAttr();
 }
