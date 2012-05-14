@@ -1,7 +1,9 @@
 #include "utils.hpp"
 
 #include <sstream>
+#include <algorithm>
 #include <curl/curl.h>
+#include <boost/algorithm/string/trim_all.hpp>
 #include <boost/xpressive/xpressive.hpp>
 
 using namespace std;
@@ -93,6 +95,10 @@ string slin::getWebsiteTitle(string *html)
     if(regex_search(*html, what, titlef))
     {
         title = what[1].str();
+
+        // Remove all uneeded spaces
+        title.erase(remove(title.begin(), title.end(), '\n'), title.end());
+        boost::algorithm::trim_all(title);
     }
     else
     {
