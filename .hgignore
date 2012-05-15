@@ -1,4 +1,12 @@
 syntax: glob
+*.o
+*.so
+*.a
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
 *~
 *.user
 build/*
