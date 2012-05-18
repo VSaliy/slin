@@ -98,7 +98,7 @@ void url_link(const vector<string> &urls)
 
         link.Title = slin::getWebsiteTitle(html);
         link.Url = url;
-        link.Description = slin::getWebsiteDescription(html); // From where I can get this?
+        link.Description = slin::getWebsiteDescription(html);
         db->AddLink(link);
         cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
 
