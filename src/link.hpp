@@ -30,27 +30,10 @@ namespace slin
   };
 }
 
-// This is needed for std::unordered_set
+
 namespace std
 {
-    template<>
-    struct hash<slin::Link>
-    {
-        size_t operator()(const slin::Link &link) const
-        {
-            return link.GetID(); // We assume that the ID is unique.
-        }
-    };
-
-    template<>
-    struct equal_to<slin::Link>
-    {
-        bool operator()(const slin::Link &lhs, const slin::Link &rhs) const
-        {
-            return lhs.GetID() == rhs.GetID();
-        }
-    };
-
+    // Needed for std::set
     template<>
     struct less<slin::Link>
     {
