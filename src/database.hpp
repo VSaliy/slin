@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <boost/filesystem.hpp>
 
 // Prevent warnings from SOCI
@@ -30,11 +30,11 @@ namespace slin
         Link GetLink(int id);
         
         // Query functions
-        std::unordered_set<Link> Search(std::string query);
-        std::unordered_set<Link> SearchTitle(std::string query);
-        std::unordered_set<Link> SearchLink(std::string query);
-        std::unordered_set<Link> SearchDescription(std::string query);
-        std::unordered_set<Link> SearchTag(std::string query);
+        std::set<Link> Search(std::string query);
+        std::set<Link> SearchTitle(std::string query);
+        std::set<Link> SearchLink(std::string query);
+        std::set<Link> SearchDescription(std::string query);
+        std::set<Link> SearchTag(std::string query);
 
     private:
         std::string m_filename;

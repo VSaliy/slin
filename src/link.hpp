@@ -50,4 +50,13 @@ namespace std
             return lhs.GetID() == rhs.GetID();
         }
     };
+
+    template<>
+    struct less<slin::Link>
+    {
+        bool operator()(const slin::Link &lhs, const slin::Link &rhs) const
+        {
+            return lhs.GetID() < rhs.GetID();
+        }
+    };
 }

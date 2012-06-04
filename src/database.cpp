@@ -87,9 +87,9 @@ slin::Link slin::Database::GetLink(int id)
     return link;
 }
 
-unordered_set<slin::Link> slin::Database::Search(string query)
+set<slin::Link> slin::Database::Search(string query)
 {
-    unordered_set<slin::Link> ret;
+    set<slin::Link> ret;
     for(auto &item : this->SearchTitle(query))
         ret.insert(item);
     for(auto &item : this->SearchLink(query))
@@ -99,9 +99,9 @@ unordered_set<slin::Link> slin::Database::Search(string query)
 
     return ret;
 }
-unordered_set<slin::Link> slin::Database::SearchTitle(string query)
+set<slin::Link> slin::Database::SearchTitle(string query)
 {
-    unordered_set<slin::Link> res;
+    set<slin::Link> res;
     rowset<int> rs = ((this->sql->prepare) << "select rowid from Links where title like :q", use("%" + query + "%"));
     for(auto &id : rs)
     {
@@ -109,9 +109,9 @@ unordered_set<slin::Link> slin::Database::SearchTitle(string query)
     }
     return res;
 }
-unordered_set<slin::Link> slin::Database::SearchLink(string query)
+set<slin::Link> slin::Database::SearchLink(string query)
 {
-    unordered_set<slin::Link> res;
+    set<slin::Link> res;
     rowset<int> rs = (this->sql->prepare << "select rowid from Links where url like :q", use("%" + query + "%"));
     for(auto &id : rs)
     {
@@ -119,9 +119,9 @@ unordered_set<slin::Link> slin::Database::SearchLink(string query)
     }
     return res;
 }
-unordered_set<slin::Link> slin::Database::SearchDescription(string query)
+set<slin::Link> slin::Database::SearchDescription(string query)
 {
-    unordered_set<slin::Link> res;
+    set<slin::Link> res;
     rowset<int> rs = (this->sql->prepare << "select rowid from Links where description like :q", use("%" + query + "%"));
     for(auto &id : rs)
     {
@@ -129,13 +129,13 @@ unordered_set<slin::Link> slin::Database::SearchDescription(string query)
     }
     return res;
 }
-unordered_set<slin::Link> slin::Database::SearchTag(string query)
+set<slin::Link> slin::Database::SearchTag(string query)
 {
     if(!boost::algorithm::starts_with(query, "#"))
-        return unordered_set<slin::Link>();
+        return set<slin::Link>();
     query.erase(0, 1); // Delete the first character("#")
 
-    unordered_set<slin::Link> res;
+    set<slin::Link> res;
     rowset<int> rs = (this->sql->prepare << "select rowid from Links where tags like :q", use("%" + query + "%"));
     for(auto &id : rs)
     {
