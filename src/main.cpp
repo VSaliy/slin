@@ -13,6 +13,7 @@
 
 #include "database.hpp"
 #include "link.hpp"
+#include "utils.hpp"
 #include "config.hpp"
 
 slin::Database *db;
@@ -23,43 +24,13 @@ YAML::Node config;
 using namespace std;
 namespace fs = boost::filesystem;
 
-fs::path searchConfig()
-{
-#ifdef _WIN32
-    //TODO: Implement searchConfig for Windows
-    return fs::current_path() / "slin.yml";
-
-#elif __linux__
-    auto path = getenv("XDG_CONFIG_HOME");
-    if(path != NULL)
-    {
-        return fs::path(path) / "slin.yml";
-    }
-    path = getenv("HOME");
-    if(path != NULL)
-    {
-        return fs::path(path) / ".slin.yml";
-    }
-    return fs::current_path() / "slin.yml";
-
-#elif __APPLE__
-    //TODO: Implement searchConfig for Mac
-    return fs::current_path() / "slin.yml";
-
-#else
-    #warning "Unknown Operating System!"
-    cerr << "Unknown Operating System!" << endl;
-    return fs::current_path() / "slin.yml";
-#endif
-}
-
 void writeDefaultConfig(string filename)
 {
     ofstream fout(filename);
 
     YAML::Node config;
     config["color"] = true;
-    config["database"] = (searchConfig().parent_path() / "slin.db").native();
+    config["database"] = slin::findConfig("slin.db");
     
     fout << config;
     fout.close();
@@ -238,12 +209,12 @@ void show_help()
 int main(int argc, char **argv)
 {
     // Load config file
-    fs::path config_filename = searchConfig();
+    string config_filename = slin::findConfig("slin.yml");
     if(!fs::exists(config_filename))
     {
-        writeDefaultConfig(config_filename.native());
+        writeDefaultConfig(config_filename);
     }
-    config = YAML::LoadFile(config_filename.native());
+    config = YAML::LoadFile(config_filename);
 
     terminalLoad();
 

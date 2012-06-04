@@ -5,8 +5,10 @@
 #include <curl/curl.h>
 #include <boost/algorithm/string/trim_all.hpp>
 #include <boost/xpressive/xpressive.hpp>
+#include <boost/filesystem.hpp>
 
 using namespace std;
+namespace fs = boost::filesystem;
 
 string slin::concatStrings(const unordered_set<string> &set, string seperator)
 {
@@ -140,4 +142,39 @@ string slin::getWebsiteDescription(const string &url)
     string description = slin::getWebsiteDescription(page);
     delete page;
     return description;
+}
+
+
+string slin::findConfig(string filename)
+{
+    fs::path path;
+#ifdef _WIN32
+    //TODO: Implement findConfig for Windows
+    path = fs::current_path() / filename;
+
+#elif __linux__
+    auto xdg_dir = getenv("XDG_CONFIG_HOME");
+    auto home_dir = getenv("HOME");
+    if(xdg_dir != nullptr)
+    {
+        path = fs::path(xdg_dir) / filename;
+    }
+    else if(home_dir != nullptr)
+    {
+        path = fs::path(home_dir) / ("." + filename);
+    }
+    else
+    {
+        path = fs::current_path() / filename;
+    }
+
+#elif __APPLE__
+    //TODO: Implement findConfig for Mac
+    path = fs::current_path() / filename;
+
+#else
+    #warning "Unsupported Operating System!"
+    path = fs::current_path() / filename;
+#endif
+    return path.native();
 }
