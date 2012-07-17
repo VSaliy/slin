@@ -177,7 +177,8 @@ string slin::findConfig(string filename)
     #warning "Unsupported Operating System!"
     path = fs::current_path() / filename;
 #endif
-    return path.native();
+    
+    return path.string();
 }
 
 pair<string, string> slin::splitConfigEntry(string entry)
