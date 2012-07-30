@@ -3,6 +3,7 @@
 #include <sstream>
 #include <algorithm>
 #include <curl/curl.h>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/filesystem.hpp>
@@ -177,4 +178,16 @@ string slin::findConfig(string filename)
     path = fs::current_path() / filename;
 #endif
     return path.native();
+}
+
+pair<string, string> slin::splitConfigEntry(string entry)
+{
+    vector<std::string> splitted;
+    boost::algorithm::split(splitted, entry, boost::algorithm::is_any_of("="));
+    if(splitted.size() < 2)
+    {
+        cerr << "Can't split string '" << entry << "'" << endl;
+        throw new string("slin::splitConfigEntry: Error");
+    }
+    return make_pair(splitted[0], splitted[1]);
 }

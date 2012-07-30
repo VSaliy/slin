@@ -97,22 +97,6 @@ void tag_link(int *id, const vector<string> &tags)
 
 }
 
-void describe_link(int *id, string *desc)
-{
-    slin::Link link;
-    try
-    {
-        link = db->GetLink(*id);
-        link.Description = *desc;
-        db->UpdateLink(link);
-        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
-    }
-    catch(const string &e)
-    {
-        cout << setColor(utio::red) << e << resetAttr() << endl;
-    }
-}
-
 void view_link(int id, bool quit=false)
 {
     try
@@ -177,6 +161,37 @@ void remove_link(const vector<int> &ids)
     }
 }
 
+void set_link(int *id, const vector<string> &args)
+{
+    for(const auto &arg : args)
+    {
+        try
+        {
+            auto entry = slin::splitConfigEntry(arg);
+            slin::Link link = db->GetLink(*id);
+            if(entry.first == "description")
+            {
+                link.Description = entry.second;
+            }
+            else if(entry.first == "title")
+            {
+                link.Title = entry.second;
+            }
+            else if(entry.first == "url")
+            {
+                link.Url = entry.second;
+            }
+            db->UpdateLink(link);
+        }
+        catch(const string& e)
+        {
+            cout << setColor(utio::red) << e << resetAttr() << endl;
+            return;
+        }
+    }
+    cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
+}
+
 void show_version()
 {
     cout << setColor(utio::green) << "Slin v0.1" << resetAttr() << endl;
@@ -196,11 +211,11 @@ void show_help()
     _print_help("add",      "<title> <url> [<description> [#<tag>...]]", "Adds a link to the database.");
     _print_help("url",      "<url>...", "Adds a link to the database based on an url.");
     _print_help("tag",      "<id> [#[+|-]<tag>...]", "Adds or Removes an tag from a link.");
-    _print_help("describe", "<id> <description>", "Set a description of a link.");
     _print_help("search",   "<query|#[+|-]tag>...", "Search links.");
-    _print_help("searchq",  "<query|#[+|-]tag>...", "Search links but only display ID, name and URL.")
+    _print_help("searchq",  "<query|#[+|-]tag>...", "Search links but only display ID, name and URL.");
     _print_help("view",     "<id>...", "Display information about a link.");
     _print_help("remove",   "<id>...", "Removes a link from the database.");
+    _print_help("set",      "<id> [<key>=<value>]...", "Set a property of a link.('title', 'url', 'description')");
     _print_help("version",  "", "Shows the version of slin.");
     _print_help("help",     "", "Shows this help.");
 
@@ -247,9 +262,6 @@ int main(int argc, char **argv)
     // Tag Command
     int *tag_id         = nullptr;
     vector<string> tag_tags;
-    // Describe Command
-    int *desc_id        = nullptr;
-    string *desc_desc   = nullptr;
     // Search Command
     vector<string> search_args;
     // Searchq Command
@@ -258,7 +270,9 @@ int main(int argc, char **argv)
     vector<int> view_ids;
     // Remove Command
     vector<int> rem_ids;
-
+    // Set Command
+    int *set_id         = nullptr;
+    vector<string> set_args;
 
     for(int i = 0; i < argc; i++)
     {
@@ -340,31 +354,6 @@ int main(int argc, char **argv)
                 done = true;
             }
         }
-        // Describe Command
-        //     |describe| ___ | ___
-        else if(*subcommand == "describe")
-        {
-            if(desc_id == nullptr)
-            {
-                try
-                {
-                    desc_id = new int(boost::lexical_cast<int>(argv[i]));
-                }
-                catch(const boost::bad_lexical_cast&)
-                {
-                    cout << "Invalid number!" << endl;
-                }
-            }
-            else
-            {
-                if(desc_desc == nullptr)
-                    desc_desc = new string();
-                else
-                    *desc_desc += " "; // Append a space if it's not the first element
-                *desc_desc += argv[i];
-                done = true;
-            }
-        }
         // Search Command
         //     |search| ...
         else if(*subcommand == "search")
@@ -408,6 +397,29 @@ int main(int argc, char **argv)
                 cout << "Invalid number!" << endl;
             }
         }
+        // Set Command
+        //     | set | ___ | ...
+        else if(*subcommand == "set")
+        {
+            // | set | ### | ...
+            if(set_id == nullptr)
+            {
+                try
+                {
+                    set_id = new int(boost::lexical_cast<int>(argv[i]));
+                }
+                catch(const boost::bad_lexical_cast& e)
+                {
+                    cout << "Invalid ID" << endl;
+                }
+            }
+            // | set |     | ###
+            else
+            {
+                set_args.emplace_back(argv[i]);
+                done = true;
+            }
+        }
         // Version Command
         //     |version
         else if(*subcommand == "version")
@@ -444,8 +456,6 @@ int main(int argc, char **argv)
         url_link(url_urls);
     else if(*subcommand == "tag")
         tag_link(tag_id, tag_tags);
-    else if(*subcommand == "describe")
-        describe_link(desc_id, desc_desc);
     else if(*subcommand == "search")
         search_link(search_args);
     else if(*subcommand == "searchq")
@@ -454,6 +464,8 @@ int main(int argc, char **argv)
         view_link(view_ids);
     else if(*subcommand == "remove")
         remove_link(rem_ids);
+    else if(*subcommand == "set")
+        set_link(set_id, set_args);
     else if(*subcommand == "version")
         show_version();
     else if(*subcommand == "help")
@@ -467,8 +479,7 @@ cleanup: // I know this is not nice :)
     tryDelete(add_url);
     tryDelete(add_desc);
     tryDelete(tag_id);
-    tryDelete(desc_id);
-    tryDelete(desc_desc);
+    tryDelete(set_id);
 
     delete db;
     return 0;

@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <vector>
 #include <string>
+#include <utility>
 
 namespace slin
 {
@@ -17,4 +18,5 @@ namespace slin
     std::string getWebsiteDescription(const std::string &url);
 
     std::string findConfig(std::string filename);
+    std::pair<std::string, std::string> splitConfigEntry(std::string entry);
 }
