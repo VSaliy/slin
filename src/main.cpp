@@ -198,6 +198,7 @@ void show_help()
     _print_help("tag",      "<id> [#[+|-]<tag>...]", "Adds or Removes an tag from a link.");
     _print_help("describe", "<id> <description>", "Set a description of a link.");
     _print_help("search",   "<query|#[+|-]tag>...", "Search links.");
+    _print_help("searchq",  "<query|#[+|-]tag>...", "Search links but only display ID, name and URL.")
     _print_help("view",     "<id>...", "Display information about a link.");
     _print_help("remove",   "<id>...", "Removes a link from the database.");
     _print_help("version",  "", "Shows the version of slin.");
