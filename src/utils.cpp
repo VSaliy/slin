@@ -1,5 +1,6 @@
 #include "utils.hpp"
 
+#include <iostream>
 #include <sstream>
 #include <algorithm>
 #include <curl/curl.h>
