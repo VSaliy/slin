@@ -328,7 +328,7 @@ int main(int argc, char **argv)
             }
             // Tags
             // | add  |     |     |     | ...
-            else if(boost::algorithm::starts_with(argv[i], "#"))
+            else if(slin::isTag(argv[i]))
             {
                 add_tags.emplace_back(argv[i]);
             }
