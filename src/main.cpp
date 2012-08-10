@@ -258,7 +258,7 @@ int main(int argc, char **argv)
     string *add_desc    = nullptr;
     vector<string> add_tags;
     // URL Command
-    vector<string> url_urls;
+    vector<string> url_args;
     // Tag Command
     int *tag_id         = nullptr;
     vector<string> tag_tags;
@@ -328,7 +328,7 @@ int main(int argc, char **argv)
         else if(*subcommand == "url")
         {
             // | url  | ...
-            url_urls.emplace_back(argv[i]);
+            url_args.emplace_back(argv[i]);
             done = true;
         }
         // Tag Command
@@ -453,7 +453,7 @@ int main(int argc, char **argv)
     if(*subcommand == "add")
         add_link(add_title, add_url, add_desc, add_tags);
     else if(*subcommand == "url")
-        url_link(url_urls);
+        url_link(url_args);
     else if(*subcommand == "tag")
         tag_link(tag_id, tag_tags);
     else if(*subcommand == "search")
