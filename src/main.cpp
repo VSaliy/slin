@@ -60,20 +60,30 @@ void add_link(string *title, string *url, string *description, const vector<stri
     cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
 }
 
-void url_link(const vector<string> &urls)
+void url_link(const vector<string> &args)
 {
-    for(auto &url : urls)
+    slin::Link link;
+    for(auto &arg : args)
     {
-        slin::Link link;
-        auto html = slin::getWebsite(url);
+        if(slin::isTag(arg))
+        {
+            // If it's a tag add it to the previous link
+            link.Tag(arg);
+            db->UpdateLink(link);
+        }
+        else
+        {
+            link = slin::Link();
+            auto html = slin::getWebsite(arg);
 
-        link.Title = slin::getWebsiteTitle(html);
-        link.Url = url;
-        link.Description = slin::getWebsiteDescription(html);
-        db->AddLink(link);
-        cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
+            link.Title = slin::getWebsiteTitle(html);
+            link.Url = arg;
+            link.Description = slin::getWebsiteDescription(html);
+            db->AddLink(link);
+            cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
 
-        delete html;
+            delete html;
+        }
     }
 }
 
@@ -209,7 +219,7 @@ void show_help()
     cout << setColor(utio::green) << "Help: " << endl;
 
     _print_help("add",      "<title> <url> [<description> [#<tag>...]]", "Adds a link to the database.");
-    _print_help("url",      "<url>...", "Adds a link to the database based on an url.");
+    _print_help("url",      "<url> [#<tag>...] [<url> [#<tag>...]]...", "Adds a link to the database based on an url.");
     _print_help("tag",      "<id> [#[+|-]<tag>...]", "Adds or Removes an tag from a link.");
     _print_help("search",   "<query|#[+|-]tag>...", "Search links.");
     _print_help("searchq",  "<query|#[+|-]tag>...", "Search links but only display ID, name and URL.");

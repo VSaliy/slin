@@ -4,6 +4,7 @@
 #include <sstream>
 #include <algorithm>
 #include <curl/curl.h>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 #include <boost/xpressive/xpressive.hpp>
@@ -56,6 +57,13 @@ unordered_set<string> slin::splitStrings(string str, char seperator)
         set.insert(word);
 
     return set;
+}
+
+bool slin::isTag(string str)
+{
+    if(boost::algorithm::starts_with(str, "#"))
+        return true;
+    return false;
 }
 
 static size_t write_data_cb(char *buffer, size_t size, size_t nmemb, void *userp)
