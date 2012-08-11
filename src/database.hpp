@@ -36,6 +36,7 @@ namespace slin
         std::set<Link> SearchDescription(std::string query);
         std::set<Link> SearchTag(std::string query);
 
+        bool ExistsUrl(std::string url);
     private:
         std::string m_filename;
         soci::session *sql;

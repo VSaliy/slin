@@ -53,6 +53,12 @@ bool tryDelete(T *p)
 
 void add_link(string *title, string *url, string *description, const vector<string> &tags)
 {
+    if(db->ExistsUrl(*url))
+    {
+        cout << setColor(utio::red) << "Link already in Database." << resetAttr() << endl;
+        return;
+    }
+
     slin::Link link(*title, *url, description == nullptr ? "" : *description);
     for(auto &tag : tags)
         link.Tag(tag);
@@ -73,6 +79,12 @@ void url_link(const vector<string> &args)
         }
         else
         {
+            if(db->ExistsUrl(arg))
+            {
+                cout << setColor(utio::red) << "Link already in Database." << resetAttr() << endl;
+                continue;
+            }
+
             link = slin::Link();
             auto html = slin::getWebsite(arg);
 

@@ -143,3 +143,12 @@ set<slin::Link> slin::Database::SearchTag(string query)
     }
     return res;
 }
+
+bool slin::Database::ExistsUrl(string url)
+{
+    int count;
+    *(this->sql) << "select count(*) from Links where url = :u", into(count), use(url);
+    if(count > 0)
+        return true;
+    return false;
+}
