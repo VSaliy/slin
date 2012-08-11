@@ -35,15 +35,8 @@ void slin::Database::AddLink(Link &link)
     if(link.GetID() > 0) // The Link is probably already in the DB
         return;
 
-    string tags = concatStrings(link.Tags, "\x91"); //0x91 unicode: private use one
-    string notes = concatStrings(link.Notes, "\x91");
     *(this->sql) << "insert into Links(title,url,description,tags,notes) values"
-                "(:title,:url,:description,:tags,:notes);",
-                use(link.Title),
-                use(link.Url),
-                use(link.Description),
-                use(tags),
-                use(notes);
+                "(:title,:url,:description,:tags,:notes);", use(link);
 
     *(this->sql) << "select last_insert_rowid();", into(link.m_id);
 }
@@ -56,12 +49,7 @@ void slin::Database::UpdateLink(const Link &link)
     string tags  = concatStrings(link.Tags, "\x91");
     string notes = concatStrings(link.Notes, "\x91");
     *this->sql << "update Links set title=:title,url=:url,description=:description,tags=:tags,notes=:notes where id=:id",
-                  use(link.Title),
-                  use(link.Url),
-                  use(link.Description),
-                  use(tags),
-                  use(notes),
-                  use(link.GetID());
+                  use(link);
 }
 
 void slin::Database::RemoveLink(int id)
@@ -72,18 +60,13 @@ void slin::Database::RemoveLink(int id)
 slin::Link slin::Database::GetLink(int id)
 {
     slin::Link link;
-    string tags;
-    string notes;
-    char delim = (char)*("\x91");
 
-    link.m_id = id;
-    *(this->sql) << "select title,url,description,tags,notes from Links where id = :id",
-                    into(link.Title), into(link.Url), into(link.Description), into(tags), into(notes), use(id);
+    *(this->sql) << "select * from Links where id = :id",
+                    into(link), use(id);
+
     if(not this->sql->got_data())
         throw string("There is no Link with ID=" + boost::lexical_cast<string>(id));
-    
-    link.Tags  = slin::splitStrings(tags , delim);
-    link.Notes = slin::splitStrings(notes, delim);
+
     return link;
 }
 
