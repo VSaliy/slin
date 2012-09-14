@@ -102,7 +102,7 @@ string slin::getWebsiteTitle(string *html)
     string title;
 
     // Extract the title from the webpage
-    static sregex titlef = as_xpr("<title>") >> (s1=-+_) >> "</title>";
+    static sregex titlef = icase("<title>") >> (s1=-+_) >> icase("</title>");
     smatch what;
     if(regex_search(*html, what, titlef))
     {
