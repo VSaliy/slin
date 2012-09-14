@@ -10,3 +10,4 @@ install_manifest.txt
 *.user
 build/*
 src/config.hpp
+*.sublime-*
