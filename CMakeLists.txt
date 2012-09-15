@@ -20,7 +20,8 @@ else(USTL_LIBRARY AND UTIO_LIBRARY)
 endif(USTL_LIBRARY AND UTIO_LIBRARY)
 
 find_library (YAML_CPP_LIBRARY NAMES yaml-cpp libyaml-cpp)
-find_library (LIBCURL_LIBRARY NAMES curl libcurl)
+find_path (YAML_CPP_INCLUDE yaml-cpp/yaml.h)
+find_library (LIBCURL_LIBRARY NAMES libcurldll curl libcurl)
 
 find_path (SOCI_INCLUDE soci.h PATH_SUFFIXES soci)
 find_path (SOCI_SQLITE3_INCLUDE soci-sqlite3.h PATHS "${SOCI_INCLUDE}/sqlite3/")
