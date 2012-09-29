@@ -2,7 +2,7 @@
 
 #include <string>
 
-enum class Color : unsigned int
+enum Color
 {
     Black,
     Red,
