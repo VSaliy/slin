@@ -15,11 +15,10 @@
 #include "link.hpp"
 #include "utils.hpp"
 #include "config.hpp"
+#include "coloroutput.hpp"
 
 slin::Database *db;
 YAML::Node config;
-
-#include "coloroutput.hpp"
 
 using namespace std;
 namespace fs = boost::filesystem;
@@ -55,7 +54,7 @@ void add_link(string *title, string *url, string *description, const vector<stri
 {
     if(db->ExistsUrl(*url))
     {
-        cout << setColor(utio::red) << "Link already in Database." << resetAttr() << endl;
+        cout << setColor(Color::Red) << "Link already in Database." << resetAttr() << endl;
         return;
     }
 
@@ -63,7 +62,7 @@ void add_link(string *title, string *url, string *description, const vector<stri
     for(auto &tag : tags)
         link.Tag(tag);
     db->AddLink(link);
-    cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
+    cout << setColor(Color::LightGreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
 }
 
 void url_link(const vector<string> &args)
@@ -81,7 +80,7 @@ void url_link(const vector<string> &args)
         {
             if(db->ExistsUrl(arg))
             {
-                cout << setColor(utio::red) << "Link already in Database." << resetAttr() << endl;
+                cout << setColor(Color::Red) << "Link already in Database." << resetAttr() << endl;
                 continue;
             }
 
@@ -92,7 +91,7 @@ void url_link(const vector<string> &args)
             link.Url = arg;
             link.Description = slin::getWebsiteDescription(html);
             db->AddLink(link);
-            cout << setColor(utio::lightgreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
+            cout << setColor(Color::LightGreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
 
             delete html;
         }
@@ -110,11 +109,11 @@ void tag_link(int *id, const vector<string> &tags)
             link.Tag(tag);
         }
         db->UpdateLink(link);
-        cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
+        cout << setColor(Color::LightGreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
     }
     catch(const string &e)
     {
-        cout << setColor(utio::red) << e << resetAttr() << endl;
+        cout << setColor(Color::Red) << e << resetAttr() << endl;
     }
 
 }
@@ -124,17 +123,23 @@ void view_link(int id, bool quit=false)
     try
     {
         slin::Link link = db->GetLink(id);
-        cout << setColor(utio::green) << setw(4) << link.GetID() << ": "<< setColor(utio::lightblue) << link.Title << setColor(utio::blue) <<" (" << link.Url << ")"
+        cout << setColor(Color::Green) << setw(4) << link.GetID() << ": " << setBold() << setColor(Color::LightBlue) << link.Title << " (" << link.Url << ")"
             << ((quit||(link.Description.empty() && link.Tags.empty())) ? "":":") << endl;
 
+        cout << resetAttr();
         if(!quit)
         {
-            cout << setColor(utio::lightgreen);
             if(link.Description != "")
-                cout << "      Description: " << link.Description << endl;
+            {
+                cout << setColor(Color::Orange);
+                cout << "      Description: " << setColor(Color::Yellow) << link.Description << endl;
+            }
+
             if(not link.Tags.empty())
             {
+                cout << setColor(Color::Orange);
                 cout << "      Tags:";
+                cout << setColor(Color::Yellow);
                 for(auto &tag : link.Tags)
                     cout << " #" << tag;
                 cout << endl;
@@ -145,7 +150,7 @@ void view_link(int id, bool quit=false)
     }
     catch(const string &e)
     {
-        cout << setColor(utio::red) << e << resetAttr() << endl;
+        cout << setColor(Color::Red) << e << resetAttr() << endl;
     }
 }
 
@@ -179,7 +184,7 @@ void remove_link(const vector<int> &ids)
     for(auto &id : ids)
     {
         db->RemoveLink(id);
-        cout << setColor(utio::lightgreen) << "Removed Link" << endl << "ID: " << id << resetAttr() << endl;
+        cout << setColor(Color::LightGreen) << "Removed Link" << endl << "ID: " << id << resetAttr() << endl;
     }
 }
 
@@ -207,28 +212,28 @@ void set_link(int *id, const vector<string> &args)
         }
         catch(const string& e)
         {
-            cout << setColor(utio::red) << e << resetAttr() << endl;
+            cout << setColor(Color::Red) << e << resetAttr() << endl;
             return;
         }
     }
-    cout << setColor(utio::lightgreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
+    cout << setColor(Color::LightGreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
 }
 
 void show_version()
 {
-    cout << setColor(utio::green) << "Slin v0.1" << resetAttr() << endl;
+    cout << setColor(Color::Green) << "Slin v0.1" << resetAttr() << endl;
 }
 
 inline static void _print_help(string command, string arguments, string description)
 {
     #define HELP_ALIGN 10
-    cout << setColor(utio::yellow) << setw(HELP_ALIGN) << command + " " << setColor(utio::blue) << arguments << endl;
-    cout << setColor(utio::lightgray) << string(HELP_ALIGN, ' ') << description << endl;
+    cout << setColor(Color::Yellow) << setw(HELP_ALIGN) << command + " " << setColor(Color::LightBlue) << arguments << endl;
+    cout << setColor(Color::White) << string(HELP_ALIGN, ' ') << description << endl;
 }
 
 void show_help()
 {
-    cout << setColor(utio::green) << "Help: " << endl;
+    cout << setColor(Color::Green) << "Help: " << endl;
 
     _print_help("add",      "<title> <url> [<description> [#<tag>...]]", "Adds a link to the database.");
     _print_help("url",      "<url> [#<tag>...] [<url> [#<tag>...]]...", "Adds a link to the database based on an url.");
@@ -254,7 +259,7 @@ int main(int argc, char **argv)
     }
     config = YAML::LoadFile(config_filename);
 
-    terminalLoad();
+    initTerminal();
 
     // Open Database
     if(config["database"])
@@ -462,7 +467,7 @@ int main(int argc, char **argv)
     // Check if there were not enough/wrong arguments
     if(!done)
     {
-        cout << endl << setColor(utio::red) << "Commandline parsing failed. Probably not enough arguments. " << resetAttr() << endl;
+        cout << endl << setColor(Color::Red) << "Commandline parsing failed. Probably not enough arguments. " << resetAttr() << endl;
         if(subcommand)
             cout << "Subcommand: " << *subcommand << endl;
 

@@ -10,14 +10,13 @@ set (CPACK_PACKAGE_EXECUTABLES "slin")
 
 set (CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++0x")
 
-find_library (USTL_LIBRARY NAMES ustl libustl)
-find_library (UTIO_LIBRARY NAMES utio libutio)
+find_package (Curses)
 
-if(USTL_LIBRARY AND UTIO_LIBRARY)
+if(CURSES_FOUND OR WIN32)
 	option(WITH_COLOR "Enables color output" ON)
-else(USTL_LIBRARY AND UTIO_LIBRARY)
+else(CURSES_FOUND OR WIN32)
 	option(WITH_COLOR "Enables color output" OFF)
-endif(USTL_LIBRARY AND UTIO_LIBRARY)
+endif(CURSES_FOUND OR WIN32)
 
 find_library (YAML_CPP_LIBRARY NAMES yaml-cpp libyaml-cpp)
 find_path (YAML_CPP_INCLUDE yaml-cpp/yaml.h)

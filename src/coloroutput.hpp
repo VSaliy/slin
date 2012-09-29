@@ -1,45 +1,28 @@
 #pragma once
 
-#ifdef WITH_COLOR
-#include <utio.h>
+#include <string>
 
-utio::CTerminfo ti;
-
-const ustl::string setColor_(utio::EColor fg)
+enum class Color : unsigned int
 {
-    if(config["color"].as<bool>() == true)
-    {
-        return ti.Color(fg);
-    }
-    else
-    {
-        return "";
-    }
-}
+    Black,
+    Red,
+    Green,
+    Orange,
+    Blue,
+    Magenta,
+    Cyan,
+    Gray,
+    DarkGray,
+    LightRed,
+    LightGreen,
+    Yellow,
+    LightBlue,
+    LightMagenta,
+    LightCyan,
+    White
+};
 
-utio::CTerminfo::capout_t resetAttr_()
-{
-    if(config["color"].as<bool>() == true)
-    {
-        return ti.AllAttrsOff();
-    }
-    else
-    {
-        return "";
-    }
-}
-
-void terminalLoad()
-{
-    ti.Load();
-}
-
-#define setColor(FG) setColor_(FG)
-#define resetAttr() resetAttr_()
-#else // WITH_COLOR
-#define setColor(FG) ""
-#define resetAttr() ""
-void terminalLoad()
-{
-}
-#endif // WITH_COLOR
+const std::string setColor(Color color);
+const std::string resetAttr();
+const std::string setBold();
+void initTerminal();
