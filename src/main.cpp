@@ -54,7 +54,8 @@ void add_link(string *title, string *url, string *description, const vector<stri
 {
     if(db->ExistsUrl(*url))
     {
-        cout << setColor(Color::Red) << "Link already in Database." << resetAttr() << endl;
+        cout << setColor(Color::Red) << "Link already in Database.";
+            cout << resetAttr() << endl;
         return;
     }
 
@@ -62,7 +63,8 @@ void add_link(string *title, string *url, string *description, const vector<stri
     for(auto &tag : tags)
         link.Tag(tag);
     db->AddLink(link);
-    cout << setColor(Color::LightGreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
+    cout << setColor(Color::LightGreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID();
+        cout << resetAttr() << endl;
 }
 
 void url_link(const vector<string> &args)
@@ -80,7 +82,8 @@ void url_link(const vector<string> &args)
         {
             if(db->ExistsUrl(arg))
             {
-                cout << setColor(Color::Red) << "Link already in Database." << resetAttr() << endl;
+                cout << setColor(Color::Red) << "Link already in Database.";
+                    cout << resetAttr() << endl;
                 continue;
             }
 
@@ -91,7 +94,8 @@ void url_link(const vector<string> &args)
             link.Url = arg;
             link.Description = slin::getWebsiteDescription(html);
             db->AddLink(link);
-            cout << setColor(Color::LightGreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID() << resetAttr() << endl;
+            cout << setColor(Color::LightGreen) << "Added Link \"" << link.Title << "\"" << endl << "Link ID: " << link.GetID();
+                cout << resetAttr() << endl;
 
             delete html;
         }
@@ -109,11 +113,13 @@ void tag_link(int *id, const vector<string> &tags)
             link.Tag(tag);
         }
         db->UpdateLink(link);
-        cout << setColor(Color::LightGreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
+        cout << setColor(Color::LightGreen) << "Updated Link" << endl << "ID: " << *id;
+            cout << resetAttr() << endl;
     }
     catch(const string &e)
     {
-        cout << setColor(Color::Red) << e << resetAttr() << endl;
+        cout << setColor(Color::Red) << e;
+            cout << resetAttr() << endl;
     }
 
 }
@@ -123,8 +129,9 @@ void view_link(int id, bool quit=false)
     try
     {
         slin::Link link = db->GetLink(id);
-        cout << setColor(Color::Green) << setw(4) << link.GetID() << ": " << setBold() << setColor(Color::LightBlue) << link.Title << " (" << link.Url << ")"
-            << ((quit||(link.Description.empty() && link.Tags.empty())) ? "":":") << endl;
+        cout << setColor(Color::Green) << setw(4) << link.GetID() << ": ";
+            cout << setBold() << setColor(Color::LightBlue) << link.Title << " (" << link.Url << ")";
+        cout << ((quit||(link.Description.empty() && link.Tags.empty())) ? "":":") << endl;
 
         cout << resetAttr();
         if(!quit)
@@ -150,7 +157,8 @@ void view_link(int id, bool quit=false)
     }
     catch(const string &e)
     {
-        cout << setColor(Color::Red) << e << resetAttr() << endl;
+        cout << setColor(Color::Red) << e;
+            cout << resetAttr() << endl;
     }
 }
 
@@ -184,7 +192,8 @@ void remove_link(const vector<int> &ids)
     for(auto &id : ids)
     {
         db->RemoveLink(id);
-        cout << setColor(Color::LightGreen) << "Removed Link" << endl << "ID: " << id << resetAttr() << endl;
+        cout << setColor(Color::LightGreen) << "Removed Link" << endl << "ID: " << id;
+            cout << resetAttr() << endl;
     }
 }
 
@@ -212,11 +221,13 @@ void set_link(int *id, const vector<string> &args)
         }
         catch(const string& e)
         {
-            cout << setColor(Color::Red) << e << resetAttr() << endl;
+            cout << setColor(Color::Red) << e;
+                cout << resetAttr() << endl;
             return;
         }
     }
-    cout << setColor(Color::LightGreen) << "Updated Link" << endl << "ID: " << *id << resetAttr() << endl;
+    cout << setColor(Color::LightGreen) << "Updated Link" << endl << "ID: " << *id;
+        cout <<resetAttr() << endl;
 }
 
 void show_version()
@@ -227,7 +238,8 @@ void show_version()
 inline static void _print_help(string command, string arguments, string description)
 {
     #define HELP_ALIGN 10
-    cout << setColor(Color::Yellow) << setw(HELP_ALIGN) << command + " " << setColor(Color::LightBlue) << arguments << endl;
+    cout << setColor(Color::Yellow) << setw(HELP_ALIGN) << command + " ";
+        cout << setColor(Color::LightBlue) << arguments << endl;
     cout << setColor(Color::White) << string(HELP_ALIGN, ' ') << description << endl;
 }
 
@@ -467,7 +479,8 @@ int main(int argc, char **argv)
     // Check if there were not enough/wrong arguments
     if(!done)
     {
-        cout << endl << setColor(Color::Red) << "Commandline parsing failed. Probably not enough arguments. " << resetAttr() << endl;
+        cout << endl << setColor(Color::Red) << "Commandline parsing failed. Probably not enough arguments. ";
+            cout << resetAttr() << endl;
         if(subcommand)
             cout << "Subcommand: " << *subcommand << endl;
 
