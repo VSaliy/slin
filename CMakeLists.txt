@@ -8,7 +8,7 @@ set (CPACK_PACKAGE_VERSION_MINOR "1")
 set (CPACK_PACKAGE_VERSION_PATCH "0")
 set (CPACK_PACKAGE_EXECUTABLES "slin")
 
-set (CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++0x")
+list (APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++0x")
 
 find_library (USTL_LIBRARY NAMES ustl libustl)
 find_library (UTIO_LIBRARY NAMES utio libutio)
