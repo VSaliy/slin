@@ -1,14 +1,25 @@
 cmake_minimum_required (VERSION 2.8)
 project (slin)
 
+include (CheckCXXCompilerFlag)
+
+macro (ADD_CXX_FLAG_IF_SUPPORTED FLAGNAME FLAG)
+    CHECK_CXX_COMPILER_FLAG (${FLAG} ${FLAGNAME})
+    if (${FLAGNAME})
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}")
+    endif (${FLAGNAME})
+endmacro()
+
+ADD_CXX_FLAG_IF_SUPPORTED ("CXX11" "-std=c++0x")
+ADD_CXX_FLAG_IF_SUPPORTED ("Wall" "-Wall")
+ADD_CXX_FLAG_IF_SUPPORTED ("Wextra" "-Wextra")
+
 include (CPack)
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A small link manager for the cli")
 set (CPACK_PACKAGE_VERSION_MAJOR "0")
 set (CPACK_PACKAGE_VERSION_MINOR "1")
 set (CPACK_PACKAGE_VERSION_PATCH "0")
 set (CPACK_PACKAGE_EXECUTABLES "slin")
-
-list (APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++0x")
 
 find_package (Curses)
 
