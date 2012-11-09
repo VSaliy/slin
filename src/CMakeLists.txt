@@ -1,7 +1,7 @@
-include_directories (${Boost_INCLUDE_DIRS} ${SOCI_INCLUDE} ${SOCI_SQLITE3_INCLUDE})
+include_directories (SYSTEM ${Boost_INCLUDE_DIRS} ${SOCI_INCLUDE} ${SOCI_SQLITE3_INCLUDE})
 
 if (WITH_COLOR AND CURSES_FOUND)
-	include_directories (${CURSES_INCLUDE_DIR})
+    include_directories (SYSTEM ${CURSES_INCLUDE_DIR})
 endif ()
 
 set (SLIN_SOURCE main.cpp link.cpp database.cpp utils.cpp configfile.cpp)
