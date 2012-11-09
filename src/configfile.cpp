@@ -66,7 +66,7 @@ ConfigItem::ConfigItem(std::string defaultValue)
 }
 
 ConfigItem::ConfigItem(std::string defaultValue, std::string value)
-    : Default(defaultValue), Value(value)
+    : Value(value), Default(defaultValue)
 {
 }
 
