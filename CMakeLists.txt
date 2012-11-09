@@ -29,8 +29,6 @@ else(CURSES_FOUND OR WIN32)
 	option(WITH_COLOR "Enables color output" OFF)
 endif(CURSES_FOUND OR WIN32)
 
-find_library (YAML_CPP_LIBRARY NAMES yaml-cpp libyaml-cpp)
-find_path (YAML_CPP_INCLUDE yaml-cpp/yaml.h)
 find_library (LIBCURL_LIBRARY NAMES libcurldll curl libcurl)
 
 find_path (SOCI_INCLUDE soci.h PATH_SUFFIXES soci)

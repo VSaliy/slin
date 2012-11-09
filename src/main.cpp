@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <yaml-cpp/yaml.h>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -16,25 +15,12 @@
 #include "utils.hpp"
 #include "config.hpp"
 #include "coloroutput.hpp"
+#include "configfile.hpp"
 
 slin::Database *db;
-YAML::Node config;
 
 using namespace std;
 namespace fs = boost::filesystem;
-
-void writeDefaultConfig(string filename)
-{
-    ofstream fout(filename);
-
-    YAML::Node config;
-    config["color"] = true;
-    config["database"] = slin::findConfig("slin.db");
-    
-    fout << config;
-    fout.close();
-}
-
 
 template<class T>
 bool tryDelete(T *p)
@@ -265,26 +251,18 @@ int main(int argc, char **argv)
 {
     // Load config file
     string config_filename = slin::findConfig("slin.yml");
-    if(!fs::exists(config_filename))
-    {
-        writeDefaultConfig(config_filename);
-    }
-    config = YAML::LoadFile(config_filename);
+
+    ConfigFile myConfig(config_filename);
+
+    // Default Config
+    myConfig.Set("database", ConfigItem{slin::findConfig("slin.db")});
+    myConfig.Set("color", ConfigItem{"true"});
 
     initTerminal();
 
-    // Open Database
-    if(config["database"])
-    {
-        string database_filename = config["database"].as<string>();
-        db = new slin::Database(database_filename);
-    }
-    else
-    {
-        cerr << "Can't find 'database' key in config" << endl;
-        return 1;
-    }
-    
+    string database_filename = myConfig["database"]();
+    db = new slin::Database(database_filename);
+
     ////////////////////
     // Parse Commandline
     bool done = false;

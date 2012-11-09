@@ -1,10 +1,10 @@
-include_directories (${Boost_INCLUDE_DIRS} ${YAML_CPP_INCLUDE} ${SOCI_INCLUDE} ${SOCI_SQLITE3_INCLUDE})
+include_directories (${Boost_INCLUDE_DIRS} ${SOCI_INCLUDE} ${SOCI_SQLITE3_INCLUDE})
 
 if (WITH_COLOR AND CURSES_FOUND)
 	include_directories (${CURSES_INCLUDE_DIR})
 endif ()
 
-set (SLIN_SOURCE main.cpp link.cpp database.cpp utils.cpp)
+set (SLIN_SOURCE main.cpp link.cpp database.cpp utils.cpp configfile.cpp)
 
 # Platform specific coloroutput files
 if (WITH_COLOR AND CURSES_FOUND)
@@ -25,7 +25,7 @@ if (WITH_COLOR AND CURSES_FOUND)
 	target_link_libraries (slin ${CURSES_LIBRARIES})
 endif (WITH_COLOR AND CURSES_FOUND)
 
-target_link_libraries (slin ${SOCI_LIBRARY} ${SOCI_SQLITE3_LIBRARY} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${LIBCURL_LIBRARY})
+target_link_libraries (slin ${SOCI_LIBRARY} ${SOCI_SQLITE3_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${LIBCURL_LIBRARY})
 # Soci needs libdl on Unix
 if (UNIX)
 	target_link_libraries (slin "dl")
