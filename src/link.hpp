@@ -26,7 +26,7 @@ namespace slin
   class Link
   {
   friend class Database;
-  friend class soci::type_conversion<slin::Link>;
+  friend struct soci::type_conversion<slin::Link>;
   public:
     Link();
     Link(std::string title, std::string link, std::string description);
