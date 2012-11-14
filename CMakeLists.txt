@@ -14,6 +14,8 @@ ADD_CXX_FLAG_IF_SUPPORTED ("CXX11" "-std=c++0x")
 ADD_CXX_FLAG_IF_SUPPORTED ("Wall" "-Wall")
 ADD_CXX_FLAG_IF_SUPPORTED ("Wextra" "-Wextra")
 
+option (BUILD_SHARED_LIBS "Build shared libraries." OFF)
+
 include (CPack)
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "A small link manager for the cli")
 set (CPACK_PACKAGE_VERSION_MAJOR "0")

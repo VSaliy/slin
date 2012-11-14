@@ -14,7 +14,9 @@ else ()
 endif ()
 
 add_executable (slin ${SLIN_SOURCE})
-install (TARGETS slin DESTINATION bin)
+
+install (TARGETS slin
+         RUNTIME DESTINATION bin)
 
 configure_file (${CMAKE_SOURCE_DIR}/src/cli/config.hpp.cmake
     ${CMAKE_SOURCE_DIR}/src/cli/config.hpp)
