@@ -16,6 +16,8 @@
 
 #include <iostream>
 
+#include "regex.hpp"
+
 slin::Link::Link()
     : m_id{-1}
 {}
@@ -33,11 +35,10 @@ int slin::Link::GetID() const
 void slin::Link::Tag(const std::string &tag)
 {
     using namespace boost::xpressive;
-    // Regex: #(+|-)?(.*)
-    static sregex tagf = as_xpr("#") >> !(s1=(as_xpr("+") | "-")) >> (s2=+_);
+
     smatch what;
     bool remove = false;
-    if(regex_match(tag, what, tagf))
+    if(regex_match(tag, what, slin::regex::tag_format))
     {
         if(what[1].matched)
             remove = what[1].str() == "-";

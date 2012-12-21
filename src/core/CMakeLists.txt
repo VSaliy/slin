@@ -1,5 +1,5 @@
-set (LIBSLIN_SOURCE link.cpp database.cpp utils.cpp configfile.cpp)
-set (LIBSLIN_HEADERS link.hpp database.hpp utils.hpp configfile.hpp)
+set (LIBSLIN_SOURCE link.cpp database.cpp utils.cpp configfile.cpp regex.cpp)
+set (LIBSLIN_HEADERS link.hpp database.hpp utils.hpp configfile.hpp regex.hpp)
 
 add_library (slin-core ${LIBSLIN_SOURCE})
 install (FILES ${LIBSLIN_HEADERS} DESTINATION include/slin-core)

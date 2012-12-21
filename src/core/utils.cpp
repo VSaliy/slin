@@ -21,8 +21,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
-#include <boost/xpressive/xpressive.hpp>
 #include <boost/filesystem.hpp>
+
+#include "regex.hpp"
 
 using namespace std;
 namespace fs = boost::filesystem;
@@ -116,9 +117,8 @@ string slin::getWebsiteTitle(string *html)
     string title;
 
     // Extract the title from the webpage
-    static sregex titlef = icase("<title>") >> (s1=-+_) >> icase("</title>");
     smatch what;
-    if(regex_search(*html, what, titlef))
+    if(regex_search(*html, what, slin::regex::html_title))
     {
         title = what[1].str();
 
@@ -147,9 +147,8 @@ string slin::getWebsiteDescription(string *html)
 
     string description;
 
-    static sregex descriptionf = icase("<meta name=\"description\" content=\"") >> (s1=-+_) >> "\"" >> -*(~_w) >> -!as_xpr("/") >> ">";
     smatch what;
-    if(regex_search(*html, what, descriptionf))
+    if(regex_search(*html, what, slin::regex::html_description))
     {
         description = what[1].str();
     }
@@ -200,7 +199,7 @@ string slin::findConfig(string filename)
     #warning "Unsupported Operating System!"
     path = fs::current_path() / filename;
 #endif
-    
+
     return path.string();
 }
 
