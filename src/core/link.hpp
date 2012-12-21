@@ -54,7 +54,7 @@ namespace soci
     struct type_conversion<slin::Link>
     {
         typedef values base_type;
-        static void from_base(values const &v, indicator ind, slin::Link &p)
+        static void from_base(values const &v, indicator, slin::Link &p)
         {
             char delim = (char)*("\x91");
 
